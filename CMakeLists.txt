@@ -10,7 +10,7 @@ add_executable(wndwalk
 )
 
 target_include_directories(wndwalk PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/include
 )
 
 target_link_libraries(wndwalk
