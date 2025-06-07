@@ -1,6 +1,6 @@
- #include "KeyManager.hpp"
- 
-KeyManager::KeyManager(unsigned int baseId) : id(baseId) {}
+#include "KeyManager.hpp"
+
+KeyManager::KeyManager(unsigned int baseId) : currentId(baseId) {}
 
 KeyManager::~KeyManager() {
     for (const auto& [id, _] : callbacks) {
@@ -19,24 +19,23 @@ void KeyManager::spin()
 
 bool KeyManager::registerHotKey(const Key& key)
 {
-    if (!RegisterHotKey(NULL, id, key.modifier, key.symbol)) {
+    if (!RegisterHotKey(NULL, currentId, key.modifier, key.symbol)) {
         return false;
     }
 
-    callbacks[id++] = key.function;
+    callbacks[currentId++] = {key.function, key.arg};
     return true;
 }
 
 bool KeyManager::handleMessage(const MSG& msg)
 {
-    // Assert hotkey message
-    if (msg.message != WM_HOTKEY) 
+    if (msg.message != WM_HOTKEY)
         return false;
-    
-    // Find and run callback
-    auto iterator = callbacks.find((unsigned int)msg.wParam);
+
+    auto iterator = callbacks.find(static_cast<unsigned int>(msg.wParam));
     if (iterator != callbacks.end()) {
-        iterator->second();
+        const auto& [function, argument] = iterator->second;
+        function(argument);
         return true;
     }
 

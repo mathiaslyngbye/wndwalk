@@ -19,6 +19,6 @@ public:
 private:
     bool handleMessage(const MSG& msg);
 
-    unsigned int id;
-    std::unordered_map<UINT, std::function<void()>> callbacks;
+    unsigned int currentId;
+    std::unordered_map<unsigned int, std::pair<std::function<void(const Arg&)>, Arg>> callbacks;
 };
