@@ -24,7 +24,7 @@ This project supports building from source on Windows using **CMake** and **Visu
     ```cmd
     mkdir build
     cd build
-    cmake .. -G "NMake Makefiles" -A x64
+    cmake .. -G "NMake Makefiles"
     nmake
     ```
 
