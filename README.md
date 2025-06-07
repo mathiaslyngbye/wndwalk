@@ -6,6 +6,10 @@
 
 wndwalk provides improved virtual desktop navigation on MS Windows.
 
+## Configuration
+
+Modify ```include/config.hpp``` as desired and rebuild.
+
 ## Build from source
 
 This project supports building from source on Windows using **CMake** and **Visual Studio Build Tools**.
