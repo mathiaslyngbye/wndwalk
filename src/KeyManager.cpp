@@ -2,8 +2,10 @@
 
 KeyManager::KeyManager(unsigned int baseId) : currentId(baseId) {}
 
-KeyManager::~KeyManager() {
-    for (const auto& [id, _] : callbacks) {
+KeyManager::~KeyManager()
+{
+    for (const auto& [id, _] : callbacks)
+    {
         UnregisterHotKey(NULL, id);
     }
     callbacks.clear();
@@ -12,14 +14,16 @@ KeyManager::~KeyManager() {
 void KeyManager::spin()
 {
     MSG msg = {};
-    while (GetMessage(&msg, NULL, 0, 0)) {
+    while (GetMessage(&msg, NULL, 0, 0))
+    {
         handleMessage(msg);
     }
 }
 
 bool KeyManager::registerHotKey(const Key& key)
 {
-    if (!RegisterHotKey(NULL, currentId, key.modifier, key.symbol)) {
+    if (!RegisterHotKey(NULL, currentId, key.modifier, key.symbol))
+    {
         return false;
     }
 
@@ -33,7 +37,8 @@ bool KeyManager::handleMessage(const MSG& msg)
         return false;
 
     auto iterator = callbacks.find(static_cast<unsigned int>(msg.wParam));
-    if (iterator != callbacks.end()) {
+    if (iterator != callbacks.end())
+    {
         const auto& [function, argument] = iterator->second;
         function(argument);
         return true;

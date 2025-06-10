@@ -5,7 +5,8 @@
 // Modifier macro
 #define MOD_KEY MOD_ALT
 
-void action(const Arg &arg) {
+void action(const Arg &arg)
+{
     int index = std::get<int>(arg);
     wchar_t msg[64];
     swprintf_s(msg, L"Hotkey %d pressed!", index);
