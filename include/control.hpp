@@ -1,13 +1,13 @@
 #pragma once
 
 #include <windows.h>
+#include "log.hpp"
 
-inline void action(const Arg &arg)
+inline void log(const Arg &arg)
 {
     int index = std::get<int>(arg);
     wchar_t msg[64];
-    swprintf_s(msg, L"Hotkey %d pressed!", index);
-    MessageBox(NULL, msg, L"Hotkey Triggered", MB_OK);
+    LOG("Called hotkey with index " << index);
 }
 
 inline void spawn(const Arg& arg)
