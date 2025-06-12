@@ -4,8 +4,8 @@
 #include <functional>
 
 #include "config.hpp"
-#include "Key.hpp"
-#include "KeyManager.hpp"
+#include "key.hpp"
+#include "key_manager.hpp"
 
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int) 

@@ -6,7 +6,7 @@ add_definitions(-DUNICODE -D_UNICODE)
 
 add_executable(wndwalk
     src/main.cpp
-    src/KeyManager.cpp
+    src/key_manager.cpp
 )
 
 target_link_libraries(wndwalk

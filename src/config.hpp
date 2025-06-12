@@ -1,5 +1,5 @@
 
-#include "Key.hpp"
+#include "key.hpp"
 #include "control.hpp"
 
 // Modifier macro
