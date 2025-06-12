@@ -9,10 +9,6 @@ add_executable(wndwalk
     src/KeyManager.cpp
 )
 
-target_include_directories(wndwalk PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
-)
-
 target_link_libraries(wndwalk
     user32
 )
