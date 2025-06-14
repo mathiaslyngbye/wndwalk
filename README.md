@@ -6,6 +6,13 @@
 
 wndwalk provides improved virtual desktop navigation on MS Windows.
 
+## Tutorial
+
+```
+[Alt]+[{1..9}]        // switch to another desktop
+[Alt]+[Shift]+[Enter] // launch terminal
+```
+
 ## Configuration
 
 Modify ```include/config.hpp``` as desired and rebuild.
