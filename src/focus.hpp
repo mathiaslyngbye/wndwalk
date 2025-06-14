@@ -1,20 +1,18 @@
 #ifndef FOCUS_HPP
 #define FOCUS_HPP
 
-#include <unordered_map>
+#include <map>
 #include <Windows.h>
-#include <rpc.h>
 
-struct GUIDHasher
+struct GUIDComparer
 {
-    std::size_t operator()(const GUID& guid) const noexcept
+    bool operator()(const GUID& a, const GUID& b) const noexcept 
     {
-        RPC_STATUS status;
-        return UuidHash(const_cast<GUID*>(&guid), &status);
+        return memcmp(&a, &b, sizeof(GUID)) < 0;
     }
 };
 
-inline std::unordered_map<GUID, HWND, GUIDHasher> focusCache;
+inline std::map<GUID, HWND, GUIDComparer> focusCache;
 
 inline void cacheFocus(const GUID& desktop, HWND window)
 {
