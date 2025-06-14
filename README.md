@@ -15,7 +15,7 @@ wndwalk provides improved virtual desktop navigation on MS Windows.
 
 ## Configuration
 
-Modify ```include/config.hpp``` as desired and rebuild.
+Modify ```src/config.hpp``` as desired and rebuild.
 
 ## Build from source
 
