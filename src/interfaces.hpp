@@ -1,9 +1,7 @@
 #pragma once
 
-#include <Windows.h>
-#include <Unknwn.h>
-#include <shobjidl.h>
-#include <initguid.h>
+#include <Unknwn.h>    // IUnknown
+#include <initguid.h>  // DEFINE_GUID
 
 // CLSIDs
 DEFINE_GUID(CLSID_ImmersiveShell,                   0xC2F03A33, 0x21F5, 0x47FA, 0xB4, 0xBB, 0x15, 0x63, 0x62, 0xA2, 0xF2, 0x39);
