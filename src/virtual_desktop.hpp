@@ -20,8 +20,7 @@ inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> getVirtualDesktopM
     Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal;
     provider->QueryService(
         CLSID_VirtualDesktopManagerInternal,
-        IID_IVirtualDesktopManagerInternal,
-        reinterpret_cast<void**>(vdmInternal.GetAddressOf())
+        vdmInternal.GetAddressOf()
     );
 
     return vdmInternal;
@@ -48,10 +47,32 @@ inline void switchToDesktopByIndex(unsigned int index)
 
     // Get desktop at index
     Microsoft::WRL::ComPtr<IUnknown> desktop;
-    desktops->GetAt(index, __uuidof(IUnknown), reinterpret_cast<void**>(desktop.GetAddressOf()));
+    desktops->GetAt(
+        index, 
+        __uuidof(IUnknown),
+        reinterpret_cast<void**>(desktop.GetAddressOf())
+    );
 
     // Switch to it
     vdmInternal->SwitchDesktop(desktop.Get());
+}
+
+inline GUID getCurrentDesktopId()
+{
+    // Get vdm internal
+    Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal = getVirtualDesktopManagerInternal();
+    
+    // Get current desktop as unknown
+    Microsoft::WRL::ComPtr<IUnknown> unknown;
+    vdmInternal->GetCurrentDesktop(&unknown);
+
+    // Get desktop from unknown
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
+    unknown.As(&desktop);
+
+    GUID id = {};
+    desktop->GetID(&id);
+    return id;
 }
 
 #endif // VIRTUAL_DESKTOP_HPP
