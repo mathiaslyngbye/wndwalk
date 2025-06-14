@@ -28,4 +28,4 @@ const std::vector<Key> keys = {
     {MOD_KEY | MOD_SHIFT,   VK_RETURN,  spawn,              L"wt.exe"},
 };
 
-#endif CONFIG_HPP
+#endif // CONFIG_HPP
