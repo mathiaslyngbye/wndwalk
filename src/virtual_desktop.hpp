@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VIRTUAL_DESKTOP_HPP
+#define VIRTUAL_DESKTOP_HPP
 
 #include <combaseapi.h> // CoCreateInstance
 #include <shobjidl.h>   // IServiceProvider, IObjectArray
@@ -52,3 +53,5 @@ inline void switchToDesktopByIndex(unsigned int index)
     // Switch to it
     vdmInternal->SwitchDesktop(desktop.Get());
 }
+
+#endif // VIRTUAL_DESKTOP_HPP

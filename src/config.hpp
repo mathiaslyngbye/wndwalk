@@ -1,3 +1,5 @@
+#ifndef CONFIG_HPP
+#define CONFIG_HPP
 
 #include "key.hpp"
 #include "control.hpp"
@@ -25,3 +27,5 @@ const std::vector<Key> keys = {
     {MOD_KEY | MOD_SHIFT,   'C',        log,                0},
     {MOD_KEY | MOD_SHIFT,   VK_RETURN,  spawn,              L"wt.exe"},
 };
+
+#endif CONFIG_HPP

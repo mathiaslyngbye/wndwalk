@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INTERFACES_HPP
+#define INTERFACES_HPP
 
 #include <Unknwn.h>    // IUnknown
 #include <initguid.h>  // DEFINE_GUID
@@ -24,3 +25,5 @@ struct IVirtualDesktopManagerInternal : public IUnknown
     virtual HRESULT STDMETHODCALLTYPE RemoveDesktop(IUnknown* desktop, IUnknown* fallback) = 0;
     virtual HRESULT STDMETHODCALLTYPE FindDesktop(GUID* id, IUnknown** desktop) = 0;
 };
+
+#endif // INTERFACES_HPP

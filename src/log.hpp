@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOG_HPP
+#define LOG_HPP
 
 #define ENABLE_LOGGING 1
 
@@ -9,3 +10,5 @@ inline std::ofstream logFile("wndwalk.log", std::ios::app);
 #else
 #define LOG(msg) do {} while (0)
 #endif
+
+#endif // LOG_HPP

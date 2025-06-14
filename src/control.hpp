@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONTROL_HPP
+#define CONTROL_HPP
 
 #include <windows.h>
 
@@ -50,3 +51,4 @@ inline void spawn(const Arg& arg)
     CloseHandle(pi.hThread);
 }
 
+#endif // CONTROL_HPP

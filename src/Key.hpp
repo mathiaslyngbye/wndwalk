@@ -1,4 +1,5 @@
-#pragma once
+#ifndef KEY_HPP
+#define KEY_HPP
 
 #include <functional>
 #include <variant>
@@ -14,3 +15,5 @@ struct Key
     std::function<void(const Arg&)> function;
     Arg arg;
 };
+
+#endif // KEY_HPP

@@ -1,11 +1,12 @@
-#pragma once
+#ifndef KEY_MANAGER_HPP
+#define KEY_MANAGER_HPP
 
 #include <windows.h>
 #include <unordered_map>
 #include <functional>
 #include <vector>
 
-#include "Key.hpp"
+#include "key.hpp"
 
 class KeyManager 
 {
@@ -22,3 +23,5 @@ private:
     unsigned int currentId;
     std::unordered_map<unsigned int, std::pair<std::function<void(const Arg&)>, Arg>> callbacks;
 };
+
+#endif // KEY_MANAGER_HPP
