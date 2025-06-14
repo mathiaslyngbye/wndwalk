@@ -15,8 +15,20 @@ inline void log(const Arg &arg)
 
 inline void switchToDesktop(const Arg &arg)
 {
-    int index = std::get<int>(arg);
+    const int index = std::get<int>(arg);
+
+    // Cache current focus 
+    const GUID fromDesktop  = getCurrentDesktopId();
+    const HWND fromWindow   = GetForegroundWindow();
+    cacheFocus(fromDesktop, fromWindow);
+    
+    // Switch desktops
     switchToDesktopByIndex(index);
+
+    // Restore last focus
+    const GUID toDesktop    = getCurrentDesktopId();
+    const HWND toWindow     = decacheFocus(toDesktop);
+    setFocus(toWindow);
 }
 
 inline void spawn(const Arg& arg)
