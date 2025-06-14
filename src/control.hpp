@@ -1,13 +1,21 @@
 #pragma once
 
 #include <windows.h>
+
 #include "log.hpp"
+#include "virtual_desktop.hpp"
 
 inline void log(const Arg &arg)
 {
     int index = std::get<int>(arg);
     wchar_t msg[64];
     LOG("Called hotkey with index " << index);
+}
+
+inline void switchToDesktop(const Arg &arg)
+{
+    int index = std::get<int>(arg);
+    switchToDesktopByIndex(index);
 }
 
 inline void spawn(const Arg& arg)
@@ -41,3 +49,4 @@ inline void spawn(const Arg& arg)
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
 }
+
