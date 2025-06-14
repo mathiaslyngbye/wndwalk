@@ -4,6 +4,7 @@
 #include <windows.h>
 
 #include "log.hpp"
+#include "focus.hpp"
 #include "virtual_desktop.hpp"
 
 inline void log(const Arg &arg)

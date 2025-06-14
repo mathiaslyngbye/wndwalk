@@ -5,7 +5,6 @@
 #include <shobjidl.h>   // IServiceProvider, IObjectArray
 #include <wrl/client.h> // Microsoft::WRL::ComPtr
 
-#include "focus.hpp"
 #include "interfaces.hpp"
 
 inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> getVirtualDesktopManagerInternal()
