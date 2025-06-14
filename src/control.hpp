@@ -14,7 +14,7 @@ inline void log(const Arg &arg)
 
 inline void switchToDesktop(const Arg &arg)
 {
-    unsigned int index = std::get<unsigned int>(arg);
+    int index = std::get<int>(arg);
     switchToDesktopByIndex(index);
 }
 
