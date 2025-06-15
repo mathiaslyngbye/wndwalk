@@ -26,7 +26,7 @@ inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> getVirtualDesktopM
     return vdmInternal;
 }
 
-inline void switchToDesktopByIndex(unsigned int index)
+inline void switchDesktop(unsigned int index)
 {
     // Get vdm internal
     Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal = getVirtualDesktopManagerInternal();
@@ -57,19 +57,51 @@ inline void switchToDesktopByIndex(unsigned int index)
     vdmInternal->SwitchDesktop(desktop.Get());
 }
 
-inline GUID getCurrentDesktopId()
+inline GUID getDesktopID(unsigned int index)
+{
+    // Get vdm internal
+    Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal = getVirtualDesktopManagerInternal();
+
+    // Get desktop array
+    Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
+    vdmInternal->GetDesktops(&desktopsUnknown);
+    Microsoft::WRL::ComPtr<IObjectArray> desktops;
+    desktopsUnknown.As(&desktops);
+
+    // Get desktop count
+    unsigned int count = 0;
+    desktops->GetCount(&count);
+    if (index >= count) 
+        return GUID{};
+
+    // Get desktop at index
+    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
+    desktops->GetAt(
+        index, 
+        __uuidof(IUnknown),
+        reinterpret_cast<void**>(desktopUnknown.GetAddressOf())
+    );
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
+    desktopUnknown.As(&desktop);
+
+    // Return desktop GUID
+    GUID id = {};
+    desktop->GetID(&id);
+    return id;
+}
+
+inline GUID getCurrentDesktopID()
 {
     // Get vdm internal
     Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal = getVirtualDesktopManagerInternal();
     
-    // Get current desktop as unknown
-    Microsoft::WRL::ComPtr<IUnknown> unknown;
-    vdmInternal->GetCurrentDesktop(&unknown);
-
-    // Get desktop from unknown
+    // Get current desktop
+    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
+    vdmInternal->GetCurrentDesktop(&desktopUnknown);
     Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
-    unknown.As(&desktop);
+    desktopUnknown.As(&desktop);
 
+    // Return desktop GUID
     GUID id = {};
     desktop->GetID(&id);
     return id;

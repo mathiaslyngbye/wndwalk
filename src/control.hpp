@@ -18,17 +18,15 @@ inline void switchToDesktop(const Arg &arg)
 {
     const int index = std::get<int>(arg);
 
-    // Cache current focus 
-    const GUID fromDesktop  = getCurrentDesktopId();
+    // Declare source and destination
+    const GUID fromDesktop  = getCurrentDesktopID();
     const HWND fromWindow   = GetForegroundWindow();
-    cacheFocus(fromDesktop, fromWindow);
-    
-    // Switch desktops
-    switchToDesktopByIndex(index);
-
-    // Restore last focus
-    const GUID toDesktop    = getCurrentDesktopId();
+    const GUID toDesktop    = getDesktopID(index);
     const HWND toWindow     = decacheFocus(toDesktop);
+    
+    // Switch desktop 
+    cacheFocus(fromDesktop, fromWindow);
+    switchDesktop(index);
     setFocus(toWindow);
 }
 
