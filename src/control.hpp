@@ -30,6 +30,19 @@ inline void focusDesktop(const Arg &arg)
     setFocus(toWindow);
 }
 
+inline void sendDesktop(const Arg &arg)
+{
+    const int index = std::get<int>(arg);
+
+    // Declare source and destination
+    const HWND fromWindow   = GetForegroundWindow();
+    const GUID toDesktop    = getDesktopID(index);
+    
+    // Send window to desktop and update cache
+    moveViewToDesktop(fromWindow, index);
+    cacheFocus(toDesktop, fromWindow);
+}
+
 inline void runCommand(const Arg& arg)
 {
     // Get command

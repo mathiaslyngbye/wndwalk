@@ -26,16 +26,70 @@ inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> getVirtualDesktopM
     return vdmInternal;
 }
 
+inline Microsoft::WRL::ComPtr<IApplicationViewCollection> getApplicationViewCollection()
+{
+    Microsoft::WRL::ComPtr<IServiceProvider> provider;
+    HRESULT hr = CoCreateInstance(
+        CLSID_ImmersiveShell,
+        nullptr,
+        CLSCTX_ALL,
+        IID_PPV_ARGS(&provider)
+    );
+
+    Microsoft::WRL::ComPtr<IApplicationViewCollection> collection;
+    hr = provider->QueryService(
+        __uuidof(IApplicationViewCollection),
+        collection.GetAddressOf()
+    );
+
+    return collection;
+}
+
+inline void moveViewToDesktop(HWND window, unsigned int index)
+{
+    // Get interfaces
+    Microsoft::WRL::ComPtr<IApplicationViewCollection> viewCollection   = getApplicationViewCollection();
+    Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal  = getVirtualDesktopManagerInternal();
+
+    // Get active view
+    Microsoft::WRL::ComPtr<IApplicationView> view;
+    viewCollection->GetViewForHwnd(window, &view);
+
+    // Get desktops
+    Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
+    vdmInternal->GetDesktops(&desktopsUnknown);
+    Microsoft::WRL::ComPtr<IObjectArray> desktops;
+    desktopsUnknown.As(&desktops);
+
+    // Assert desktop count
+    UINT count = 0;
+    desktops->GetCount(&count);
+    if (index >= count)
+        return;
+
+    // Get desktop from index
+    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
+    desktops->GetAt(
+        index,
+        __uuidof(IUnknown),
+        reinterpret_cast<void**>(desktopUnknown.GetAddressOf())
+    );
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
+    desktopUnknown.As(&desktop);
+
+    // Move view to desktop
+    vdmInternal->MoveViewToDesktop(view.Get(), desktop.Get());
+}
+
+
 inline void switchDesktop(unsigned int index)
 {
     // Get vdm internal
     Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal = getVirtualDesktopManagerInternal();
 
-    // Get desktops as unknown
+    // Get desktops
     Microsoft::WRL::ComPtr<IUnknown> unknown;
     vdmInternal->GetDesktops(&unknown);
-        
-    // Get desktops from unknown
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
     unknown.As(&desktops);
 
