@@ -2,17 +2,10 @@
 #define CONTROL_HPP
 
 #include <windows.h>
+#include <string>
 
-#include "log.hpp"
 #include "focus.hpp"
 #include "virtual_desktop.hpp"
-
-inline void logArgument(const Arg &arg)
-{
-    int index = std::get<int>(arg);
-    wchar_t msg[64];
-    LOG("Called hotkey with index " << index);
-}
 
 inline void closeWindow(const Arg &arg)
 {
