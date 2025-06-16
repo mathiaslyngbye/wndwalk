@@ -32,8 +32,8 @@ const std::vector<Key> keys = {
     {MOD_KEY,               'K',        logArgument,    0},
     {MOD_KEY,               'F',        logArgument,    0},
     {MOD_KEY,               'M',        logArgument,    0},
-    {MOD_KEY | MOD_SHIFT,   'Q',        logArgument,    0},
     {MOD_KEY | MOD_SHIFT,   'C',        logArgument,    0},
+    {MOD_KEY | MOD_SHIFT,   'Q',        runCommand,     L"shutdown /l"},
     {MOD_KEY | MOD_SHIFT,   VK_RETURN,  runCommand,     L"wt.exe"},
 };
 
