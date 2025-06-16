@@ -12,10 +12,10 @@ wndwalk provides improved virtual desktop navigation on MS Windows.
 [Alt]+[{1..9}]          // switch to another desktop
 [Alt]+[Shift]+[{1..9}]  // send focused window to another desktop
 [Alt]+[Shift]+[Enter]   // launch terminal
-[Alt]+[Shift]+[Q]       // log out
-[Alt]+[Shift]+[C]       // close focused window
-[Alt]+[Shift]+[F]       // float focused window
-[Alt]+[Shift]+[M]       // maximize focused window
+[Alt]+[Shift]+[q]       // log out
+[Alt]+[Shift]+[c]       // close focused window
+[Alt]+[Shift]+[f]       // float focused window
+[Alt]+[Shift]+[m]       // maximize focused window
 ```
 
 ## Configuration
