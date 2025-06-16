@@ -16,9 +16,23 @@ inline void logArgument(const Arg &arg)
 
 inline void closeWindow(const Arg &arg)
 {
-    HWND hwnd = GetForegroundWindow();
-    if (IsWindow(hwnd))
-        PostMessage(hwnd, WM_CLOSE, 0, 0);
+    HWND window = GetForegroundWindow();
+    if (IsWindow(window))
+        PostMessage(window, WM_CLOSE, 0, 0);
+}
+
+inline void maximizeWindow(const Arg& arg)
+{
+    HWND window = GetForegroundWindow();
+    if (IsWindow(window))
+        ShowWindow(window, SW_MAXIMIZE);
+}
+
+inline void floatWindow(const Arg& arg)
+{
+    HWND window = GetForegroundWindow();
+    if (IsWindow(window))
+        ShowWindow(window, SW_RESTORE);
 }
 
 inline void focusDesktop(const Arg &arg)
