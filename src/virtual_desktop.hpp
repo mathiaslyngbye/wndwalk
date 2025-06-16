@@ -29,7 +29,7 @@ inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> getVirtualDesktopM
 inline Microsoft::WRL::ComPtr<IApplicationViewCollection> getApplicationViewCollection()
 {
     Microsoft::WRL::ComPtr<IServiceProvider> provider;
-    HRESULT hr = CoCreateInstance(
+    CoCreateInstance(
         CLSID_ImmersiveShell,
         nullptr,
         CLSCTX_ALL,
@@ -37,7 +37,7 @@ inline Microsoft::WRL::ComPtr<IApplicationViewCollection> getApplicationViewColl
     );
 
     Microsoft::WRL::ComPtr<IApplicationViewCollection> collection;
-    hr = provider->QueryService(
+    provider->QueryService(
         __uuidof(IApplicationViewCollection),
         collection.GetAddressOf()
     );
@@ -80,7 +80,6 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
     // Move view to desktop
     vdmInternal->MoveViewToDesktop(view.Get(), desktop.Get());
 }
-
 
 inline void switchDesktop(unsigned int index)
 {
