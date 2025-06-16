@@ -28,11 +28,7 @@ const std::vector<Key> keys = {
     {MOD_KEY | MOD_SHIFT,   '7',        sendDesktop,    6},
     {MOD_KEY | MOD_SHIFT,   '8',        sendDesktop,    7},
     {MOD_KEY | MOD_SHIFT,   '9',        sendDesktop,    8},
-    {MOD_KEY,               'J',        logArgument,    0},
-    {MOD_KEY,               'K',        logArgument,    0},
-    {MOD_KEY,               'F',        logArgument,    0},
-    {MOD_KEY,               'M',        logArgument,    0},
-    {MOD_KEY | MOD_SHIFT,   'C',        logArgument,    0},
+    {MOD_KEY | MOD_SHIFT,   'C',        closeWindow,    0},
     {MOD_KEY | MOD_SHIFT,   'Q',        runCommand,     L"shutdown /l"},
     {MOD_KEY | MOD_SHIFT,   VK_RETURN,  runCommand,     L"wt.exe"},
 };

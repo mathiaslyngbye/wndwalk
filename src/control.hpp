@@ -14,6 +14,13 @@ inline void logArgument(const Arg &arg)
     LOG("Called hotkey with index " << index);
 }
 
+inline void closeWindow(const Arg &arg)
+{
+    HWND hwnd = GetForegroundWindow();
+    if (IsWindow(hwnd))
+        PostMessage(hwnd, WM_CLOSE, 0, 0);
+}
+
 inline void focusDesktop(const Arg &arg)
 {
     const int index = std::get<int>(arg);
