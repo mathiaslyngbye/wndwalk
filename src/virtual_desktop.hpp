@@ -6,44 +6,7 @@
 #include <wrl/client.h> // Microsoft::WRL::ComPtr
 
 #include "interfaces.hpp"
-
-inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> getVirtualDesktopManagerInternal()
-{
-    Microsoft::WRL::ComPtr<IServiceProvider> provider;
-    CoCreateInstance(
-        CLSID_ImmersiveShell,
-        nullptr,
-        CLSCTX_ALL,
-        IID_PPV_ARGS(&provider)
-    );
-
-    Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal;
-    provider->QueryService(
-        CLSID_VirtualDesktopManagerInternal,
-        vdmInternal.GetAddressOf()
-    );
-
-    return vdmInternal;
-}
-
-inline Microsoft::WRL::ComPtr<IApplicationViewCollection> getApplicationViewCollection()
-{
-    Microsoft::WRL::ComPtr<IServiceProvider> provider;
-    CoCreateInstance(
-        CLSID_ImmersiveShell,
-        nullptr,
-        CLSCTX_ALL,
-        IID_PPV_ARGS(&provider)
-    );
-
-    Microsoft::WRL::ComPtr<IApplicationViewCollection> collection;
-    provider->QueryService(
-        __uuidof(IApplicationViewCollection),
-        collection.GetAddressOf()
-    );
-
-    return collection;
-}
+#include "services.hpp"
 
 inline void moveViewToDesktop(HWND window, unsigned int index)
 {
@@ -52,17 +15,13 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
     if (window == shell)
         return;
     
-    // Get interfaces
-    Microsoft::WRL::ComPtr<IApplicationViewCollection> viewCollection   = getApplicationViewCollection();
-    Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal  = getVirtualDesktopManagerInternal();
-
     // Get active view
     Microsoft::WRL::ComPtr<IApplicationView> view;
     viewCollection->GetViewForHwnd(window, &view);
 
     // Get desktops
     Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
-    vdmInternal->GetDesktops(&desktopsUnknown);
+    desktopManager->GetDesktops(&desktopsUnknown);
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
     desktopsUnknown.As(&desktops);
 
@@ -72,7 +31,7 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
     while (count <= index)
     {
         Microsoft::WRL::ComPtr<IVirtualDesktop> desktopCreate;
-        vdmInternal->CreateDesktopW(&desktopCreate);
+        desktopManager->CreateDesktopW(&desktopCreate);
         count++;
     }
 
@@ -87,18 +46,15 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
     desktopUnknown.As(&desktop);
 
     // Move view to desktop
-    vdmInternal->MoveViewToDesktop(view.Get(), desktop.Get());
+    desktopManager->MoveViewToDesktop(view.Get(), desktop.Get());
     SetForegroundWindow(shell);
 }
 
 inline void switchDesktop(unsigned int index)
 {
-    // Get vdm internal
-    Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal = getVirtualDesktopManagerInternal();
-
     // Get desktops
     Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
-    vdmInternal->GetDesktops(&desktopsUnknown);
+    desktopManager->GetDesktops(&desktopsUnknown);
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
     desktopsUnknown.As(&desktops);
 
@@ -108,7 +64,7 @@ inline void switchDesktop(unsigned int index)
     while (count <= index)
     {
         Microsoft::WRL::ComPtr<IVirtualDesktop> desktopCreate;
-        vdmInternal->CreateDesktopW(&desktopCreate);
+        desktopManager->CreateDesktopW(&desktopCreate);
         count++;
     }
 
@@ -121,17 +77,14 @@ inline void switchDesktop(unsigned int index)
     );
 
     // Switch to it
-    vdmInternal->SwitchDesktop(desktopUnknown.Get());
+    desktopManager->SwitchDesktop(desktopUnknown.Get());
 }
 
 inline GUID getDesktopID(unsigned int index)
 {
-    // Get vdm internal
-    Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal = getVirtualDesktopManagerInternal();
-
     // Get desktop array
     Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
-    vdmInternal->GetDesktops(&desktopsUnknown);
+    desktopManager->GetDesktops(&desktopsUnknown);
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
     desktopsUnknown.As(&desktops);
 
@@ -159,12 +112,9 @@ inline GUID getDesktopID(unsigned int index)
 
 inline GUID getCurrentDesktopID()
 {
-    // Get vdm internal
-    Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal = getVirtualDesktopManagerInternal();
-    
     // Get current desktop
     Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
-    vdmInternal->GetCurrentDesktop(&desktopUnknown);
+    desktopManager->GetCurrentDesktop(&desktopUnknown);
     Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
     desktopUnknown.As(&desktop);
 
