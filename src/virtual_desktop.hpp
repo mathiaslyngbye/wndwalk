@@ -8,34 +8,19 @@
 #include "interfaces.hpp"
 #include "services.hpp"
 
-inline void moveViewToDesktop(HWND window, unsigned int index)
+inline Microsoft::WRL::ComPtr<IObjectArray> getDesktops()
 {
-    // Assert image not background
-    HWND shell = GetShellWindow();
-    if (window == shell)
-        return;
-    
-    // Get active view
-    Microsoft::WRL::ComPtr<IApplicationView> view;
-    viewCollection->GetViewForHwnd(window, &view);
-
-    // Get desktops
     Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
     desktopManager->GetDesktops(&desktopsUnknown);
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
     desktopsUnknown.As(&desktops);
 
-    // Create desktops if they dont exist
-    unsigned int count = 0;
-    desktops->GetCount(&count);
-    while (count <= index)
-    {
-        Microsoft::WRL::ComPtr<IVirtualDesktop> desktopCreate;
-        desktopManager->CreateDesktopW(&desktopCreate);
-        count++;
-    }
+    return desktops;
+}
 
-    // Get desktop from index
+inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop(unsigned int index)
+{
+    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
     Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
     desktops->GetAt(
         index,
@@ -45,64 +30,88 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
     Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
     desktopUnknown.As(&desktop);
 
+    return desktop;
+}
+
+inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop()
+{
+    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
+    desktopManager->GetCurrentDesktop(&desktopUnknown);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
+    desktopUnknown.As(&desktop);
+
+    return desktop;
+}
+
+inline Microsoft::WRL::ComPtr<IApplicationView> getView(HWND window)
+{
+    Microsoft::WRL::ComPtr<IApplicationView> view;
+    viewCollection->GetViewForHwnd(window, &view);
+
+    return view;
+}
+
+inline void createDesktop(unsigned int index)
+{
+    // Get desktops
+    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
+    
+    // Get desktop count
+    unsigned int count = 0;
+    desktops->GetCount(&count);
+
+    // Create desktops
+    while (count <= index)
+    {
+        Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
+        desktopManager->CreateDesktopW(&desktop);
+        count++;
+    }
+}
+
+inline void moveViewToDesktop(HWND window, unsigned int index)
+{
+    // Assert image not background
+    HWND shell = GetShellWindow();
+    if (window == shell)
+        return;
+
+    // Create desktops if missing
+    createDesktop(index);
+    
+    // Get desktop and view
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(index);
+    Microsoft::WRL::ComPtr<IApplicationView> view   = getView(window);
+
     // Move view to desktop
-    desktopManager->MoveViewToDesktop(view.Get(), desktop.Get());
+    desktopManager->MoveViewToDesktop(
+        view.Get(),
+        desktop.Get()
+    );
+    
+    // Select next focus
     SetForegroundWindow(shell);
 }
 
 inline void switchDesktop(unsigned int index)
 {
-    // Get desktops
-    Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
-    desktopManager->GetDesktops(&desktopsUnknown);
-    Microsoft::WRL::ComPtr<IObjectArray> desktops;
-    desktopsUnknown.As(&desktops);
-
-    // Create desktops if they dont exist
-    unsigned int count = 0;
-    desktops->GetCount(&count);
-    while (count <= index)
-    {
-        Microsoft::WRL::ComPtr<IVirtualDesktop> desktopCreate;
-        desktopManager->CreateDesktopW(&desktopCreate);
-        count++;
-    }
+    // Create desktop if missing
+    createDesktop(index);
 
     // Get desktop at index
-    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
-    desktops->GetAt(
-        index, 
-        __uuidof(IUnknown),
-        reinterpret_cast<void**>(desktopUnknown.GetAddressOf())
-    );
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(index);
 
     // Switch to it
-    desktopManager->SwitchDesktop(desktopUnknown.Get());
+    desktopManager->SwitchDesktop(desktop.Get());
 }
 
 inline GUID getDesktopID(unsigned int index)
 {
-    // Get desktop array
-    Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
-    desktopManager->GetDesktops(&desktopsUnknown);
-    Microsoft::WRL::ComPtr<IObjectArray> desktops;
-    desktopsUnknown.As(&desktops);
-
-    // Get desktop count
-    unsigned int count = 0;
-    desktops->GetCount(&count);
-    if (index >= count) 
-        return GUID{};
+    // Create desktop if missing
+    createDesktop(index);
 
     // Get desktop at index
-    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
-    desktops->GetAt(
-        index, 
-        __uuidof(IUnknown),
-        reinterpret_cast<void**>(desktopUnknown.GetAddressOf())
-    );
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
-    desktopUnknown.As(&desktop);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(index);
 
     // Return desktop GUID
     GUID id = {};
@@ -113,10 +122,7 @@ inline GUID getDesktopID(unsigned int index)
 inline GUID getCurrentDesktopID()
 {
     // Get current desktop
-    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
-    desktopManager->GetCurrentDesktop(&desktopUnknown);
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
-    desktopUnknown.As(&desktop);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop();
 
     // Return desktop GUID
     GUID id = {};
