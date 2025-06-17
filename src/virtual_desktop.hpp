@@ -61,11 +61,15 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
     desktopsUnknown.As(&desktops);
 
-    // Assert desktop count
-    UINT count = 0;
+    // Create desktops if they dont exist
+    unsigned int count = 0;
     desktops->GetCount(&count);
-    if (index >= count)
-        return;
+    while (count <= index)
+    {
+        Microsoft::WRL::ComPtr<IVirtualDesktop> desktopCreate;
+        vdmInternal->CreateDesktopW(&desktopCreate);
+        count++;
+    }
 
     // Get desktop from index
     Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
@@ -92,11 +96,15 @@ inline void switchDesktop(unsigned int index)
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
     unknown.As(&desktops);
 
-    // Get desktop count
+    // Create desktops if they dont exist
     unsigned int count = 0;
     desktops->GetCount(&count);
-    if (index >= count) 
-        return;
+    while (count <= index)
+    {
+        Microsoft::WRL::ComPtr<IVirtualDesktop> desktopCreate;
+        vdmInternal->CreateDesktopW(&desktopCreate);
+        count++;
+    }
 
     // Get desktop at index
     Microsoft::WRL::ComPtr<IUnknown> desktop;
