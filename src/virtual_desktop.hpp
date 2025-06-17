@@ -83,6 +83,11 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
 
     // Move view to desktop
     vdmInternal->MoveViewToDesktop(view.Get(), desktop.Get());
+
+    // Try focusing the shell window
+    HWND shell = GetShellWindow();
+    if (IsWindow(shell))
+        SetForegroundWindow(shell);
 }
 
 inline void switchDesktop(unsigned int index)
