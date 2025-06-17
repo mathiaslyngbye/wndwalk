@@ -96,10 +96,10 @@ inline void switchDesktop(unsigned int index)
     Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal = getVirtualDesktopManagerInternal();
 
     // Get desktops
-    Microsoft::WRL::ComPtr<IUnknown> unknown;
-    vdmInternal->GetDesktops(&unknown);
+    Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
+    vdmInternal->GetDesktops(&desktopsUnknown);
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
-    unknown.As(&desktops);
+    desktopsUnknown.As(&desktops);
 
     // Create desktops if they dont exist
     unsigned int count = 0;
@@ -112,15 +112,15 @@ inline void switchDesktop(unsigned int index)
     }
 
     // Get desktop at index
-    Microsoft::WRL::ComPtr<IUnknown> desktop;
+    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
     desktops->GetAt(
         index, 
         __uuidof(IUnknown),
-        reinterpret_cast<void**>(desktop.GetAddressOf())
+        reinterpret_cast<void**>(desktopUnknown.GetAddressOf())
     );
 
     // Switch to it
-    vdmInternal->SwitchDesktop(desktop.Get());
+    vdmInternal->SwitchDesktop(desktopUnknown.Get());
 }
 
 inline GUID getDesktopID(unsigned int index)
