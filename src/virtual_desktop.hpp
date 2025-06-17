@@ -47,6 +47,11 @@ inline Microsoft::WRL::ComPtr<IApplicationViewCollection> getApplicationViewColl
 
 inline void moveViewToDesktop(HWND window, unsigned int index)
 {
+    // Assert image not background
+    HWND shell = GetShellWindow();
+    if (window == shell)
+        return;
+    
     // Get interfaces
     Microsoft::WRL::ComPtr<IApplicationViewCollection> viewCollection   = getApplicationViewCollection();
     Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> vdmInternal  = getVirtualDesktopManagerInternal();
@@ -83,11 +88,7 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
 
     // Move view to desktop
     vdmInternal->MoveViewToDesktop(view.Get(), desktop.Get());
-
-    // Try focusing the shell window
-    HWND shell = GetShellWindow();
-    if (IsWindow(shell))
-        SetForegroundWindow(shell);
+    SetForegroundWindow(shell);
 }
 
 inline void switchDesktop(unsigned int index)
