@@ -18,9 +18,8 @@ inline Microsoft::WRL::ComPtr<IObjectArray> getDesktops()
     return desktops;
 }
 
-inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop(unsigned int index)
+inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop(Microsoft::WRL::ComPtr<IObjectArray> desktops, unsigned int index)
 {
-    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
     Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
     desktops->GetAt(
         index,
@@ -51,11 +50,8 @@ inline Microsoft::WRL::ComPtr<IApplicationView> getView(HWND window)
     return view;
 }
 
-inline void createDesktop(unsigned int index)
+inline void createDesktops(Microsoft::WRL::ComPtr<IObjectArray> desktops, unsigned int index)
 {
-    // Get desktops
-    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    
     // Get desktop count
     unsigned int count = 0;
     desktops->GetCount(&count);
@@ -76,11 +72,12 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
     if (window == shell)
         return;
 
-    // Create desktops if missing
-    createDesktop(index);
+    // Get desktops and create if missing
+    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
+    createDesktops(desktops, index);
     
     // Get desktop and view
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(index);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops, index);
     Microsoft::WRL::ComPtr<IApplicationView> view   = getView(window);
 
     // Move view to desktop
@@ -95,11 +92,12 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
 
 inline void switchDesktop(unsigned int index)
 {
-    // Create desktop if missing
-    createDesktop(index);
+    // Get desktops and create if missing
+    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
+    createDesktops(desktops, index);
 
     // Get desktop at index
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(index);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops, index);
 
     // Switch to it
     desktopManager->SwitchDesktop(desktop.Get());
@@ -107,11 +105,12 @@ inline void switchDesktop(unsigned int index)
 
 inline GUID getDesktopID(unsigned int index)
 {
-    // Create desktop if missing
-    createDesktop(index);
+    // Get desktops and create if missing
+    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
+    createDesktops(desktops, index);
 
     // Get desktop at index
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(index);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops, index);
 
     // Return desktop GUID
     GUID id = {};
