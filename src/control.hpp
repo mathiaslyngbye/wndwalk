@@ -5,6 +5,7 @@
 #include <string>
 
 #include "focus.hpp"
+#include "log.hpp"
 #include "virtual_desktop.hpp"
 
 inline void closeWindow(const Arg &arg)
@@ -30,31 +31,60 @@ inline void floatWindow(const Arg& arg)
 
 inline void focusDesktop(const Arg &arg)
 {
+    // Get index argument
     const int index = std::get<int>(arg);
-
-    // Declare source and destination
-    const GUID fromDesktop  = getDesktopID();
-    const HWND fromWindow   = GetForegroundWindow();
-    const GUID toDesktop    = getDesktopID(index);
-    const HWND toWindow     = decacheFocus(toDesktop);
     
+    // Get desktops and create more if needed
+    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
+    createDesktops(desktops.Get(), index);
+
+    // Get source
+    Microsoft::WRL::ComPtr<IVirtualDesktop> fromDesktop = getDesktop(desktops.Get(), index);
+    const GUID fromDesktopID = getDesktopID();
+    const HWND fromWindow = GetForegroundWindow();
+    Microsoft::WRL::ComPtr<IApplicationView> fromView = getView(fromWindow);
+    
+    // Get destination
+    Microsoft::WRL::ComPtr<IVirtualDesktop> toDesktop = getDesktop(desktops.Get(), index);
+    const GUID toDesktopID = getDesktopID(toDesktop.Get());
+    const HWND toWindow = decacheFocus(toDesktopID);
+    
+    // Cache focus
+    cacheFocus(fromDesktopID, fromWindow);
+
     // Switch desktop 
-    cacheFocus(fromDesktop, fromWindow);
-    switchDesktop(index);
+    setDesktop(toDesktop.Get());
     setFocus(toWindow);
 }
 
 inline void sendDesktop(const Arg &arg)
 {
+    // Get index argument
     const int index = std::get<int>(arg);
+    
+    // Get source
+    const HWND fromWindow = GetForegroundWindow();
+    Microsoft::WRL::ComPtr<IApplicationView> fromView = getView(fromWindow);
+    
+    // Assert validity
+    HWND shell = GetShellWindow();
+    if (fromWindow == shell)
+        return;
+    
+    // Get desktops and create more if needed
+    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
+    createDesktops(desktops.Get(), index);
 
-    // Declare source and destination
-    const HWND fromWindow   = GetForegroundWindow();
-    const GUID toDesktop    = getDesktopID(index);
+    // Get destination
+    Microsoft::WRL::ComPtr<IVirtualDesktop> toDesktop = getDesktop(desktops.Get(), index);
+    const GUID toDesktopID = getDesktopID(toDesktop.Get());
     
     // Send window to desktop and update cache
-    moveViewToDesktop(fromWindow, index);
-    cacheFocus(toDesktop, fromWindow);
+    moveViewToDesktop(fromView.Get(), toDesktop.Get());
+    cacheFocus(toDesktopID, fromWindow);
+
+    // Select next focus
+    SetForegroundWindow(shell);
 }
 
 inline void runCommand(const Arg& arg)

@@ -3,10 +3,19 @@
 
 #include <combaseapi.h> // CoCreateInstance
 #include <shobjidl.h>   // IServiceProvider, IObjectArray
+#include <shobjidl_core.h>  // Contains IVirtualDesktopManager
 #include <wrl/client.h> // Microsoft::WRL::ComPtr
 
 #include "interfaces.hpp"
 #include "services.hpp"
+
+inline Microsoft::WRL::ComPtr<IApplicationView> getView(HWND window)
+{
+    Microsoft::WRL::ComPtr<IApplicationView> view;
+    viewCollection->GetViewForHwnd(window, &view);
+
+    return view;
+}
 
 inline Microsoft::WRL::ComPtr<IObjectArray> getDesktops()
 {
@@ -42,14 +51,6 @@ inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop()
     return desktop;
 }
 
-inline Microsoft::WRL::ComPtr<IApplicationView> getView(HWND window)
-{
-    Microsoft::WRL::ComPtr<IApplicationView> view;
-    viewCollection->GetViewForHwnd(window, &view);
-
-    return view;
-}
-
 inline void createDesktops(IObjectArray* desktops, unsigned int index)
 {
     // Get desktop count
@@ -65,53 +66,22 @@ inline void createDesktops(IObjectArray* desktops, unsigned int index)
     }
 }
 
-inline void moveViewToDesktop(HWND window, unsigned int index)
+inline void moveViewToDesktop(IApplicationView* view, IVirtualDesktop* desktop)
 {
-    // Assert image not background
-    HWND shell = GetShellWindow();
-    if (window == shell)
-        return;
-
-    // Get desktops and create if missing
-    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    createDesktops(desktops.Get(), index);
-    
-    // Get desktop and view
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops.Get(), index);
-    Microsoft::WRL::ComPtr<IApplicationView> view   = getView(window);
-
     // Move view to desktop
     desktopManager->MoveViewToDesktop(
-        view.Get(),
-        desktop.Get()
+        view,
+        desktop
     );
-    
-    // Select next focus
-    SetForegroundWindow(shell);
 }
 
-inline void switchDesktop(unsigned int index)
+inline void setDesktop(IVirtualDesktop* desktop)
 {
-    // Get desktops and create if missing
-    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    createDesktops(desktops.Get(), index);
-
-    // Get desktop at index
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops.Get(), index);
-
-    // Switch to it
-    desktopManager->SwitchDesktop(desktop.Get());
+    desktopManager->SwitchDesktop(desktop);
 }
 
-inline GUID getDesktopID(unsigned int index)
+inline GUID getDesktopID(IVirtualDesktop* desktop)
 {
-    // Get desktops and create if missing
-    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    createDesktops(desktops.Get(), index);
-
-    // Get desktop at index
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops.Get(), index);
-
     // Return desktop GUID
     GUID id = {};
     desktop->GetID(&id);
