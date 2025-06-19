@@ -118,7 +118,7 @@ inline GUID getDesktopID(unsigned int index)
     return id;
 }
 
-inline GUID getCurrentDesktopID()
+inline GUID getDesktopID()
 {
     // Get current desktop
     Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop();

@@ -33,7 +33,7 @@ inline void focusDesktop(const Arg &arg)
     const int index = std::get<int>(arg);
 
     // Declare source and destination
-    const GUID fromDesktop  = getCurrentDesktopID();
+    const GUID fromDesktop  = getDesktopID();
     const HWND fromWindow   = GetForegroundWindow();
     const GUID toDesktop    = getDesktopID(index);
     const HWND toWindow     = decacheFocus(toDesktop);
