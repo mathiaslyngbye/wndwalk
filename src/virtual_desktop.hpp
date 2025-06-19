@@ -18,7 +18,7 @@ inline Microsoft::WRL::ComPtr<IObjectArray> getDesktops()
     return desktops;
 }
 
-inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop(Microsoft::WRL::ComPtr<IObjectArray> desktops, unsigned int index)
+inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop(IObjectArray* desktops, unsigned int index)
 {
     Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
     desktops->GetAt(
@@ -50,7 +50,7 @@ inline Microsoft::WRL::ComPtr<IApplicationView> getView(HWND window)
     return view;
 }
 
-inline void createDesktops(Microsoft::WRL::ComPtr<IObjectArray> desktops, unsigned int index)
+inline void createDesktops(IObjectArray* desktops, unsigned int index)
 {
     // Get desktop count
     unsigned int count = 0;
@@ -74,10 +74,10 @@ inline void moveViewToDesktop(HWND window, unsigned int index)
 
     // Get desktops and create if missing
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    createDesktops(desktops, index);
+    createDesktops(desktops.Get(), index);
     
     // Get desktop and view
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops, index);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops.Get(), index);
     Microsoft::WRL::ComPtr<IApplicationView> view   = getView(window);
 
     // Move view to desktop
@@ -94,10 +94,10 @@ inline void switchDesktop(unsigned int index)
 {
     // Get desktops and create if missing
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    createDesktops(desktops, index);
+    createDesktops(desktops.Get(), index);
 
     // Get desktop at index
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops, index);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops.Get(), index);
 
     // Switch to it
     desktopManager->SwitchDesktop(desktop.Get());
@@ -107,10 +107,10 @@ inline GUID getDesktopID(unsigned int index)
 {
     // Get desktops and create if missing
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    createDesktops(desktops, index);
+    createDesktops(desktops.Get(), index);
 
     // Get desktop at index
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops, index);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop(desktops.Get(), index);
 
     // Return desktop GUID
     GUID id = {};
