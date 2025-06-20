@@ -75,20 +75,26 @@ inline void moveViewToDesktop(IApplicationView* view, IVirtualDesktop* desktop)
     );
 }
 
+inline bool isViewOnDesktop(IApplicationView* view, IVirtualDesktop* desktop)
+{
+    // Assert bad inputs
+    if (!view || !desktop)
+        return false;
+
+    // Check if visible
+    BOOL status = false;
+    desktop->IsViewVisible(view, &status);
+    return status;
+}
 inline bool canViewMoveDesktop(IApplicationView* view)
 {
     // Assert garbage view
     if (!view)
         return false;
 
-    // Move view to desktop
+    // Check if can move
     int status = 0;
-    desktopManager->CanViewMoveDesktops(
-        view,
-        &status
-    );
-
-    // Return boolean result
+    desktopManager->CanViewMoveDesktops(view, &status);
     return (status > 0);
 }
 

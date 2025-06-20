@@ -47,13 +47,18 @@ inline void focusDesktop(const Arg &arg)
     Microsoft::WRL::ComPtr<IVirtualDesktop> toDesktop = getDesktop(desktops.Get(), index);
     const GUID toDesktopID = getDesktopID(toDesktop.Get());
     const HWND toWindow = decacheFocus(toDesktopID);
+    Microsoft::WRL::ComPtr<IApplicationView> toView = getView(toWindow);
     
-    // Cache focus
-    cacheFocus(fromDesktopID, fromWindow);
+    // Verify source and cache
+    if(isViewOnDesktop(fromView.Get(), fromDesktop.Get()))
+        cacheFocus(fromDesktopID, fromWindow);
 
     // Switch desktop 
     setDesktop(toDesktop.Get());
-    setFocus(toWindow);
+
+    // Verify destination and go
+    if(isViewOnDesktop(toView.Get(), toDesktop.Get()))
+        setFocus(toWindow);
 }
 
 inline void sendDesktop(const Arg &arg)
@@ -75,6 +80,11 @@ inline void sendDesktop(const Arg &arg)
     // Get desktops and create more if needed
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
     createDesktops(desktops.Get(), index);
+
+    // Get and assert source
+    Microsoft::WRL::ComPtr<IVirtualDesktop> fromDesktop = getDesktop();
+    if (!isViewOnDesktop(fromView.Get(), fromDesktop.Get()))
+        return;
 
     // Get destination
     Microsoft::WRL::ComPtr<IVirtualDesktop> toDesktop = getDesktop(desktops.Get(), index);
