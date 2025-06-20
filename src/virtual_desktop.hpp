@@ -75,6 +75,23 @@ inline void moveViewToDesktop(IApplicationView* view, IVirtualDesktop* desktop)
     );
 }
 
+inline bool canViewMoveDesktop(IApplicationView* view)
+{
+    // Assert garbage view
+    if (!view)
+        return false;
+
+    // Move view to desktop
+    int status = 0;
+    desktopManager->CanViewMoveDesktops(
+        view,
+        &status
+    );
+
+    // Return boolean result
+    return (status > 0);
+}
+
 inline void setDesktop(IVirtualDesktop* desktop)
 {
     desktopManager->SwitchDesktop(desktop);

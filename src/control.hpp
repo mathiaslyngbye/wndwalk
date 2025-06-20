@@ -5,7 +5,6 @@
 #include <string>
 
 #include "focus.hpp"
-#include "log.hpp"
 #include "virtual_desktop.hpp"
 
 inline void closeWindow(const Arg &arg)
@@ -62,13 +61,15 @@ inline void sendDesktop(const Arg &arg)
     // Get index argument
     const int index = std::get<int>(arg);
     
-    // Get source
+    // Get and assert window
     const HWND fromWindow = GetForegroundWindow();
-    Microsoft::WRL::ComPtr<IApplicationView> fromView = getView(fromWindow);
-    
-    // Assert validity
     HWND shell = GetShellWindow();
     if (fromWindow == shell)
+        return;
+    
+    // Get and assert view
+    Microsoft::WRL::ComPtr<IApplicationView> fromView = getView(fromWindow);
+    if (!canViewMoveDesktop(fromView.Get()))
         return;
     
     // Get desktops and create more if needed
