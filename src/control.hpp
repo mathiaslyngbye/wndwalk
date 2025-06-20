@@ -72,7 +72,7 @@ inline void sendDesktop(const Arg &arg)
     if (fromWindow == shell)
         return;
     
-    // Get and assert view
+    // Get and assert source view
     Microsoft::WRL::ComPtr<IApplicationView> fromView = getView(fromWindow);
     if (!canViewMoveDesktop(fromView.Get()))
         return;
@@ -81,7 +81,7 @@ inline void sendDesktop(const Arg &arg)
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
     createDesktops(desktops.Get(), index);
 
-    // Get and assert source
+    // Get and assert source desktop
     Microsoft::WRL::ComPtr<IVirtualDesktop> fromDesktop = getDesktop();
     if (!isViewOnDesktop(fromView.Get(), fromDesktop.Get()))
         return;
@@ -95,7 +95,8 @@ inline void sendDesktop(const Arg &arg)
     cacheFocus(toDesktopID, fromWindow);
 
     // Select next focus
-    SetForegroundWindow(shell);
+    HWND toWindow = getNextWindow(fromDesktop.Get());
+    setFocus(toWindow);
 }
 
 inline void runCommand(const Arg& arg)

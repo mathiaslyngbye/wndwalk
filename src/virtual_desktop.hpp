@@ -86,6 +86,50 @@ inline bool isViewOnDesktop(IApplicationView* view, IVirtualDesktop* desktop)
     desktop->IsViewVisible(view, &status);
     return status;
 }
+
+inline bool isValid(HWND window)
+{
+    // Assert invalid and hidden
+    if (!IsWindow(window) || !IsWindowVisible(window))
+        return false;
+
+    // Assert shell
+    HWND shell = GetShellWindow();
+    if (window == shell)
+        return false;
+
+    // Assert tool window
+    LONG windowExStyle = GetWindowLong(window, GWL_EXSTYLE);
+    if (windowExStyle & WS_EX_TOOLWINDOW)
+        return false;
+
+    // Assert title window
+    LONG windowStyle = GetWindowLong(window, GWL_STYLE);
+    if (!(windowStyle & WS_CAPTION))
+        return false;
+
+    return true;
+}
+
+inline HWND getNextWindow(IVirtualDesktop* desktop)
+{
+    HWND result = nullptr;
+
+    EnumWindows([](HWND window, LPARAM lParam) -> BOOL {
+        auto [desktop, result] = *reinterpret_cast<std::pair<IVirtualDesktop*, HWND*>*>(lParam);
+
+        Microsoft::WRL::ComPtr<IApplicationView> view = getView(window);
+        if (isValid(window) && isViewOnDesktop(view.Get(), desktop))
+        {
+            *result = window;
+            return FALSE;
+        }
+        return TRUE;
+    }, reinterpret_cast<LPARAM>(&std::pair{ desktop, &result }));
+
+    return result;
+}
+
 inline bool canViewMoveDesktop(IApplicationView* view)
 {
     // Assert garbage view
