@@ -36,9 +36,9 @@ inline void focusDesktop(const Arg &arg)
     // Get desktops and create more if needed
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
     createDesktops(desktops.Get(), index);
+    desktops = getDesktops();
 
     // Get source
-    desktops = getDesktops();
     Microsoft::WRL::ComPtr<IVirtualDesktop> fromDesktop = getDesktop(desktops.Get(), index);
     const GUID fromDesktopID = getDesktopID();
     const HWND fromWindow = GetForegroundWindow();
@@ -81,6 +81,7 @@ inline void sendDesktop(const Arg &arg)
     // Get desktops and create more if needed
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
     createDesktops(desktops.Get(), index);
+    desktops = getDesktops();
 
     // Get and assert source desktop
     Microsoft::WRL::ComPtr<IVirtualDesktop> fromDesktop = getDesktop();
@@ -88,7 +89,6 @@ inline void sendDesktop(const Arg &arg)
         return;
 
     // Get destination
-    desktops = getDesktops();
     Microsoft::WRL::ComPtr<IVirtualDesktop> toDesktop = getDesktop(desktops.Get(), index);
     const GUID toDesktopID = getDesktopID(toDesktop.Get());
     
