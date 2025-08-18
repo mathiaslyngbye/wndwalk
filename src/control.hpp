@@ -51,15 +51,17 @@ inline void focusDesktop(const Arg &arg)
     Microsoft::WRL::ComPtr<IApplicationView> toView = getView(toWindow);
     
     // Verify source and cache
-    if(isViewOnDesktop(fromView.Get(), fromDesktop.Get()))
-        cacheFocus(fromDesktopID, fromWindow);
+    //if(isViewOnDesktop(fromView.Get(), fromDesktop.Get()))
+    //  cacheFocus(fromDesktopID, fromWindow);
+    cacheFocus(fromDesktopID, fromWindow);
 
     // Switch desktop 
     setDesktop(toDesktop.Get());
 
     // Verify destination and go
-    if(isViewOnDesktop(toView.Get(), toDesktop.Get()))
-        setFocus(toWindow);
+    //if(isViewOnDesktop(toView.Get(), toDesktop.Get()))
+    //    setFocus(toWindow);
+    setFocus(toWindow);
 }
 
 inline void sendDesktop(const Arg &arg)
