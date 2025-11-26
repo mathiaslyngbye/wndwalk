@@ -14,8 +14,14 @@ KeyManager::~KeyManager()
 void KeyManager::spin()
 {
     MSG msg = {};
-    while (GetMessage(&msg, NULL, 0, 0))
+    while (true)
     {
+        int status = GetMessage(&msg, NULL, 0, 0);
+        if (status == 0)
+            break;
+        if (status == -1)
+            continue;
+
         handleMessage(msg);
     }
 }
