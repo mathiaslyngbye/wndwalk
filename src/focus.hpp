@@ -25,13 +25,13 @@ inline void cacheFocus(const GUID& desktop, HWND window)
 inline HWND decacheFocus(const GUID& desktop)
 {
     auto iterator = focusCache.find(desktop);
-    if (iterator != focusCache.end() && IsWindow(iterator->second))
-    {
-        HWND window = iterator->second;
-        focusCache.erase(iterator);
-        return window;
-    }
-    return nullptr;
+    if (iterator == focusCache.end())
+        return nullptr;
+
+    HWND window = iterator->second;
+    focusCache.erase(iterator);
+    
+    return IsWindow(window) ? window : nullptr;
 }
 
 inline void setFocus(HWND window)
