@@ -61,7 +61,10 @@ inline void createDesktops(IObjectArray* desktops, unsigned int index)
     while (count <= index)
     {
         Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
-        desktopManager->CreateDesktop(&desktop);
+        HRESULT hr = desktopManager->CreateDesktop(&desktop);
+        if (FAILED(hr))
+            break;
+
         count++;
     }
 }
