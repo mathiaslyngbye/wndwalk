@@ -17,9 +17,9 @@ inline std::map<GUID, HWND, GUIDComparer> focusCache;
 inline void cacheFocus(const GUID& desktop, HWND window)
 {
     if (IsWindow(window))
-    {
         focusCache[desktop] = window;
-    }
+    else
+        focusCache.erase(desktop);
 }
 
 inline HWND decacheFocus(const GUID& desktop)
