@@ -51,7 +51,7 @@ inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop()
     return desktop;
 }
 
-inline void createDesktops(IObjectArray* desktops, unsigned int index)
+inline bool createDesktops(IObjectArray* desktops, unsigned int index)
 {
     // Get desktop count
     unsigned int count = 0;
@@ -63,10 +63,11 @@ inline void createDesktops(IObjectArray* desktops, unsigned int index)
         Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
         HRESULT hr = desktopManager->CreateDesktop(&desktop);
         if (FAILED(hr))
-            break;
+            return false;
 
         count++;
     }
+    return true;
 }
 
 inline void moveViewToDesktop(IApplicationView* view, IVirtualDesktop* desktop)

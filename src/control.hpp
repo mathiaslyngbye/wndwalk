@@ -35,7 +35,8 @@ inline void focusDesktop(const Arg &arg)
     
     // Get desktops and create more if needed
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    createDesktops(desktops.Get(), index);
+    if (!createDesktops(desktops.Get(), index))
+        return;
     desktops = getDesktops();
 
     // Get source
@@ -79,7 +80,8 @@ inline void sendDesktop(const Arg &arg)
     
     // Get desktops and create more if needed
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    createDesktops(desktops.Get(), index);
+    if (!createDesktops(desktops.Get(), index))
+        return;
     desktops = getDesktops();
 
     // Get and assert source desktop
