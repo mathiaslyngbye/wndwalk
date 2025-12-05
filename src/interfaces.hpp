@@ -17,8 +17,6 @@ IVirtualDesktop : public IUnknown
 {
     virtual HRESULT STDMETHODCALLTYPE IsViewVisible(IUnknown* view, BOOL* visible) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetID(GUID* id) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetName(HSTRING* name) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetWallpaper(HSTRING* wallpaper) = 0;
 };
 
 // IVirtualDesktopManagerInternal
@@ -41,14 +39,7 @@ IVirtualDesktopManagerInternal : public IUnknown
 struct __declspec(uuid("372E1D3B-38D3-42E4-A15B-8AB2B178F513"))
 IApplicationView : public IUnknown
 {
-    virtual HRESULT STDMETHODCALLTYPE SetFocus() = 0;
-    virtual HRESULT STDMETHODCALLTYPE SwitchTo() = 0;
-    virtual HRESULT STDMETHODCALLTYPE TryInvokeBack(IUnknown* callback) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetThumbnailWindow(HWND* hwnd) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetMonitor(HMONITOR* monitor) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetVisibility(int* visible) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetVirtualDesktopId(GUID* id) = 0;
-    virtual HRESULT STDMETHODCALLTYPE SetVirtualDesktopId(const GUID* id) = 0;
+    // No extra methods
 };
 
 struct __declspec(uuid("1841C6D7-4F9D-42C0-AF41-8747538F10E5"))
@@ -58,13 +49,6 @@ IApplicationViewCollection : public IUnknown
     virtual HRESULT STDMETHODCALLTYPE GetViewsByZOrder(IUnknown** array) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetViewsByAppUserModelId(PCWSTR id, IUnknown** array) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetViewForHwnd(HWND hwnd, IApplicationView** view) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetViewForApplication(IUnknown* app, IApplicationView** view) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetViewForAppUserModelId(PCWSTR id, IApplicationView** view) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetViewInFocus(IApplicationView** view) = 0;
-    virtual HRESULT STDMETHODCALLTYPE TryGetLastActiveVisibleView(IApplicationView** view) = 0;
-    virtual HRESULT STDMETHODCALLTYPE RefreshCollection() = 0;
-    virtual HRESULT STDMETHODCALLTYPE RegisterForApplicationViewChanges(IUnknown* listener, DWORD* id) = 0;
-    virtual HRESULT STDMETHODCALLTYPE UnregisterForApplicationViewChanges(DWORD id) = 0;
 };
 
 #endif // INTERFACES_HPP
