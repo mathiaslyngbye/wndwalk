@@ -36,11 +36,17 @@ inline HWND decacheFocus(const GUID& desktop)
 
 inline void setFocus(HWND window)
 {
-    if (IsWindow(window))
-    {
-        ShowWindow(window, IsIconic(window) ? SW_RESTORE : SW_SHOW);
-        SetForegroundWindow(window);
-    }
+    if (!IsWindow(window))
+        return;
+
+    int command = SW_SHOW;
+    if(IsIconic(window)) // Minimized
+        command = SW_RESTORE;
+    else if(IsZoomed(window)) // Maximized
+        command = SW_SHOWMAXIMIZED;
+
+    ShowWindow(window, command);
+    SetForegroundWindow(window);
 }
 
 #endif // FOCUS_HPP
