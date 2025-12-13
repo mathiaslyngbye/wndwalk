@@ -5,7 +5,7 @@
 #include "interfaces.hpp"
 
 inline Microsoft::WRL::ComPtr<IApplicationViewCollection> viewCollection;
-inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> desktopManager;
+inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> desktopManagerInternal;
 
 inline void initializeServices()
 {
@@ -24,7 +24,7 @@ inline void initializeServices()
     
     serviceProvider->QueryService(
         CLSID_VirtualDesktopManagerInternal, 
-        IID_PPV_ARGS(&desktopManager)
+        IID_PPV_ARGS(&desktopManagerInternal)
     );
 };
 

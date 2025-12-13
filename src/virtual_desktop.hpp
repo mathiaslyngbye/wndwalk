@@ -20,7 +20,7 @@ inline Microsoft::WRL::ComPtr<IApplicationView> getView(HWND window)
 inline Microsoft::WRL::ComPtr<IObjectArray> getDesktops()
 {
     Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
-    desktopManager->GetDesktops(&desktopsUnknown);
+    desktopManagerInternal->GetDesktops(&desktopsUnknown);
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
     desktopsUnknown.As(&desktops);
 
@@ -44,7 +44,7 @@ inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop(IObjectArray* desktops
 inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop()
 {
     Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
-    desktopManager->GetCurrentDesktop(&desktopUnknown);
+    desktopManagerInternal->GetCurrentDesktop(&desktopUnknown);
     Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
     desktopUnknown.As(&desktop);
 
@@ -61,7 +61,7 @@ inline bool createDesktops(IObjectArray* desktops, unsigned int index)
     while (count <= index)
     {
         Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
-        HRESULT hr = desktopManager->CreateDesktop(&desktop);
+        HRESULT hr = desktopManagerInternal->CreateDesktop(&desktop);
         if (FAILED(hr))
             return false;
 
@@ -73,7 +73,7 @@ inline bool createDesktops(IObjectArray* desktops, unsigned int index)
 inline void moveViewToDesktop(IApplicationView* view, IVirtualDesktop* desktop)
 {
     // Move view to desktop
-    desktopManager->MoveViewToDesktop(
+    desktopManagerInternal->MoveViewToDesktop(
         view,
         desktop
     );
@@ -142,13 +142,13 @@ inline bool canViewMoveDesktop(IApplicationView* view)
 
     // Check if can move
     int status = 0;
-    desktopManager->CanViewMoveDesktops(view, &status);
+    desktopManagerInternal->CanViewMoveDesktops(view, &status);
     return (status > 0);
 }
 
 inline void setDesktop(IVirtualDesktop* desktop)
 {
-    desktopManager->SwitchDesktop(desktop);
+    desktopManagerInternal->SwitchDesktop(desktop);
 }
 
 inline GUID getDesktopID(IVirtualDesktop* desktop)
