@@ -87,8 +87,7 @@ inline bool isViewOnDesktop(IApplicationView* view, IVirtualDesktop* desktop)
 
     // Check if visible
     BOOL status = false;
-    desktop->IsViewVisible(view, &status);
-    return status;
+    return SUCCEEDED(desktop->IsViewVisible(view, &status)) && status;
 }
 
 inline bool isValid(HWND window)
@@ -113,25 +112,6 @@ inline bool isValid(HWND window)
         return false;
 
     return true;
-}
-
-inline HWND getNextWindow(IVirtualDesktop* desktop)
-{
-    HWND result = nullptr;
-
-    EnumWindows([](HWND window, LPARAM lParam) -> BOOL {
-        auto [desktop, result] = *reinterpret_cast<std::pair<IVirtualDesktop*, HWND*>*>(lParam);
-
-        Microsoft::WRL::ComPtr<IApplicationView> view = getView(window);
-        if (isValid(window) && isViewOnDesktop(view.Get(), desktop))
-        {
-            *result = window;
-            return FALSE;
-        }
-        return TRUE;
-    }, reinterpret_cast<LPARAM>(&std::pair{ desktop, &result }));
-
-    return result;
 }
 
 inline bool canViewMoveDesktop(IApplicationView* view)
@@ -168,6 +148,53 @@ inline GUID getDesktopID()
     GUID id = {};
     desktop->GetID(&id);
     return id;
+}
+
+inline bool isWindowOnDesktop(HWND window, const GUID& targetId)
+{
+    if (!IsWindow(window) || !desktopManager)
+        return false;
+
+    GUID windowId = {};
+    if (SUCCEEDED(desktopManager->GetWindowDesktopId(window, &windowId)))
+        return memcmp(&windowId, &targetId, sizeof(GUID)) == 0;
+
+    // If target is current, allow the public API current-desktop check
+    BOOL onCurrent = FALSE;
+    if (SUCCEEDED(desktopManager->IsWindowOnCurrentVirtualDesktop(window, &onCurrent)) && onCurrent)
+    {
+        GUID currentId = getDesktopID();
+        return memcmp(&currentId, &targetId, sizeof(GUID)) == 0;
+    }
+
+    return false;
+}
+
+inline HWND getNextWindow(IVirtualDesktop* desktop)
+{
+    HWND result = nullptr;
+    const GUID targetId = getDesktopID(desktop);
+
+    EnumWindows([](HWND window, LPARAM lParam) -> BOOL {
+        auto [desktop, result, targetId] = *reinterpret_cast<std::tuple<IVirtualDesktop*, HWND*, const GUID*>*>(lParam);
+
+        if (!isValid(window))
+            return TRUE;
+
+        // Ensure the raw HWND belongs to the target desktop before proceeding
+        if (!isWindowOnDesktop(window, *targetId))
+            return TRUE;
+
+        Microsoft::WRL::ComPtr<IApplicationView> view = getView(window);
+        if (view && isViewOnDesktop(view.Get(), desktop))
+        {
+            *result = window;
+            return FALSE;
+        }
+        return TRUE;
+    }, reinterpret_cast<LPARAM>(&std::tuple{ desktop, &result, &targetId }));
+
+    return result;
 }
 
 #endif // VIRTUAL_DESKTOP_HPP
