@@ -1,5 +1,5 @@
-wndwalk - improved virtual desktop navigation on MS Windows.
-============================================================
+wndwalk - improved virtual desktop navigation on MS Windows
+===========================================================
 
 Tutorial
 --------
@@ -41,6 +41,7 @@ Build instructions
     nmake
 
 * The resulting executable (wndwalk.exe) will be located in the build directory.
+
 
 Troubleshooting
 ===============
