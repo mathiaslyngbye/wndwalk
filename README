@@ -1,5 +1,6 @@
-wndwalk - improved virtual desktop navigation on MS Windows
+wndwalk
 ===========================================================
+wndwalk is a small virtual desktop navigation tool for Windows.
 
 Tutorial
 --------
@@ -13,39 +14,19 @@ Tutorial
     [Alt]+[Shift]+[f]       - float focused window
     [Alt]+[Shift]+[m]       - maximize focused window
 
-
-Building from Source
-====================
-
-This project supports building from source on Windows using CMake and Visual
-Studio Build Tools.
-
 Requirements
 ------------
+In order to build wndwalk you need Visual Studio Build Tools 2022.
 
-Visual Studio Build Tools 2022: https://visualstudio.microsoft.com/downloads/
+Installation
+------------------
+Open x64 Native Tools Command Prompt for VS 2022.
+
+Afterwards, enter the following command to build wndwalk:
+
+    nmake
 
 Configuration
 -------------
-
-Configuration is done by modifying src/config.hpp as desired and (re)compiling.
-
-Build instructions
-------------------
-
-* Open x64 Native Tools Command Prompt for VS 2022
-* Build the project:
-
-    mkdir build
-    cd build
-    cmake .. -G "NMake Makefiles"
-    nmake
-
-* The resulting executable (wndwalk.exe) will be located in the build directory.
-
-
-Troubleshooting
-===============
-
-* Make sure you are using the x64 Native Tools Command Prompt — not the x86 or
-  generic command prompt.
+The configuration of wndwalk is done by editing config.hpp and (re)compiling the
+source code.
