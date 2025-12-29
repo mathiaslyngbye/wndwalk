@@ -8,12 +8,12 @@
 
 #include "key.hpp"
 
-class KeyManager 
+class KeyManager
 {
 public:
     explicit KeyManager(unsigned int baseId = 1000);
     ~KeyManager();
-    
+
     void spin();
     bool registerHotKey(const Key& key);
 

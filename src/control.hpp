@@ -32,7 +32,7 @@ inline void focusDesktop(const Arg &arg)
 {
     // Get index argument
     const int index = std::get<int>(arg);
-    
+
     // Get desktops and create more if needed
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
     if (!createDesktops(desktops.Get(), index))
@@ -44,17 +44,17 @@ inline void focusDesktop(const Arg &arg)
     const GUID fromDesktopID = getDesktopID();
     const HWND fromWindow = GetForegroundWindow();
     Microsoft::WRL::ComPtr<IApplicationView> fromView = getView(fromWindow);
-    
+
     // Get destination
     Microsoft::WRL::ComPtr<IVirtualDesktop> toDesktop = getDesktop(desktops.Get(), index);
     const GUID toDesktopID = getDesktopID(toDesktop.Get());
     const HWND toWindow = decacheFocus(toDesktopID);
     Microsoft::WRL::ComPtr<IApplicationView> toView = getView(toWindow);
-    
+
     // Verify source and cache
     cacheFocus(fromDesktopID, fromWindow);
 
-    // Switch desktop 
+    // Switch desktop
     setDesktop(toDesktop.Get());
 
     // Verify destination and go
@@ -66,18 +66,18 @@ inline void sendDesktop(const Arg &arg)
 {
     // Get index argument
     const int index = std::get<int>(arg);
-    
+
     // Get and assert window
     const HWND fromWindow = GetForegroundWindow();
     HWND shell = GetShellWindow();
     if (fromWindow == shell)
         return;
-    
+
     // Get and assert source view
     Microsoft::WRL::ComPtr<IApplicationView> fromView = getView(fromWindow);
     if (!canViewMoveDesktop(fromView.Get()))
         return;
-    
+
     // Get desktops and create more if needed
     Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
     if (!createDesktops(desktops.Get(), index))
@@ -92,7 +92,7 @@ inline void sendDesktop(const Arg &arg)
     // Get destination
     Microsoft::WRL::ComPtr<IVirtualDesktop> toDesktop = getDesktop(desktops.Get(), index);
     const GUID toDesktopID = getDesktopID(toDesktop.Get());
-    
+
     // Send window to desktop and update cache
     moveViewToDesktop(fromView.Get(), toDesktop.Get());
     cacheFocus(toDesktopID, fromWindow);

@@ -6,7 +6,7 @@
 
 struct GUIDComparer
 {
-    bool operator()(const GUID& a, const GUID& b) const noexcept 
+    bool operator()(const GUID& a, const GUID& b) const noexcept
     {
         return memcmp(&a, &b, sizeof(GUID)) < 0;
     }
@@ -30,7 +30,7 @@ inline HWND decacheFocus(const GUID& desktop)
 
     HWND window = iterator->second;
     focusCache.erase(iterator);
-    
+
     return IsWindow(window) ? window : nullptr;
 }
 
