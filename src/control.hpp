@@ -103,7 +103,7 @@ inline void sendDesktop(const Arg &arg)
     setFocus(toWindow);
 }
 
-inline void runCommand(const Arg& arg)
+inline void execute(const Arg& arg)
 {
     // Get command from arg
     const auto command = std::get<const wchar_t**>(arg);
