@@ -2,6 +2,7 @@
 #define CONTROL_HPP
 
 #include <windows.h>
+#include <shellapi.h>
 #include <string>
 
 #include "focus.hpp"
@@ -104,34 +105,34 @@ inline void sendDesktop(const Arg &arg)
 
 inline void runCommand(const Arg& arg)
 {
-    // Get command
-    const wchar_t* argCommandLine = std::get<const wchar_t*>(arg);
-    std::wstring commandLine(argCommandLine);
+    // Get command from arg
+    const auto command = std::get<const wchar_t**>(arg);
 
-    // Get user directory
-    wchar_t userDirectory[MAX_PATH] = {};
-    GetEnvironmentVariableW(L"USERPROFILE", userDirectory, MAX_PATH);
+    // Assert valid input
+    if (!command || !command[0])
+        return;
 
-    // Get process info
-    STARTUPINFOW si = {};
-    PROCESS_INFORMATION pi = {};
-    si.cb = sizeof(si);
+    // Construct command and argument variables
+    const wchar_t* exe = command[0];
+    std::wstring parameters;
+    for (size_t i = 1; command[i]; i++)
+    {
+        if (!parameters.empty())
+            parameters.push_back(L' ');
 
-    CreateProcessW(
-        NULL,               // Application name (NULL = use command line)
-        commandLine.data(), // Command line (mutable!)
-        NULL,               // Process security attributes
-        NULL,               // Thread security attributes
-        FALSE,              // Inherit handles
-        CREATE_NEW_CONSOLE, // Flags: new console, detached
-        NULL,               // Use parent's environment
-        userDirectory,      // Use parent's current directory
-        &si,                // Startup info
-        &pi                 // Process info
+        parameters += command[i];
+    }
+
+    // Run command
+    ShellExecuteW(
+        nullptr,
+        L"open",
+        exe,
+        parameters.empty() ? nullptr : parameters.c_str(),
+        nullptr,
+        SW_SHOWNORMAL
     );
-
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
 }
+
 
 #endif // CONTROL_HPP

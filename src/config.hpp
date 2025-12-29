@@ -7,11 +7,17 @@
 // Modifier macro
 #define MOD_KEY MOD_ALT
 
+// Commands
+static const wchar_t* logout[]    = { L"shutdown",    L"/l", NULL };
+static const wchar_t* terminal[]  = { L"wt.exe",      NULL };
+static const wchar_t* wndmenu[]   = { L"wndmenu.exe", NULL };
+
 // Hotkey table
 const std::vector<Key> keys = {
     /*modifier              key         function        argument*/
     {MOD_KEY,               'F',        floatWindow,    {}},
     {MOD_KEY,               'M',        maximizeWindow, {}},
+    {MOD_KEY,               'P',        runCommand,     wndmenu},
     {MOD_KEY,               '1',        focusDesktop,   0},
     {MOD_KEY,               '2',        focusDesktop,   1},
     {MOD_KEY,               '3',        focusDesktop,   2},
@@ -31,8 +37,8 @@ const std::vector<Key> keys = {
     {MOD_KEY | MOD_SHIFT,   '8',        sendDesktop,    7},
     {MOD_KEY | MOD_SHIFT,   '9',        sendDesktop,    8},
     {MOD_KEY | MOD_SHIFT,   'C',        closeWindow,    {}},
-    {MOD_KEY | MOD_SHIFT,   'Q',        runCommand,     L"shutdown /l"},
-    {MOD_KEY | MOD_SHIFT,   VK_RETURN,  runCommand,     L"wt.exe"},
+    {MOD_KEY | MOD_SHIFT,   'Q',        runCommand,     logout},
+    {MOD_KEY | MOD_SHIFT,   VK_RETURN,  runCommand,     terminal},
 };
 
 #endif // CONFIG_HPP

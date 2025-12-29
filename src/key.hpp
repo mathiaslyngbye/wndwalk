@@ -5,7 +5,7 @@
 #include <variant>
 
 // Key argument
-using Arg = std::variant<int, unsigned int, float, const wchar_t*>;
+using Arg = std::variant<int, unsigned int, float, const wchar_t**>;
 
 // Represents a single hotkey entry
 struct Key
