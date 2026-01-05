@@ -1,5 +1,5 @@
 wndwalk
-===========================================================
+=======
 wndwalk is a small virtual desktop navigation tool for Windows.
 
 Tutorial
@@ -19,7 +19,7 @@ Requirements
 In order to build wndwalk you need Visual Studio Build Tools 2022.
 
 Installation
-------------------
+------------
 Open x64 Native Tools Command Prompt for VS 2022.
 
 Afterwards, enter the following command to build wndwalk:
