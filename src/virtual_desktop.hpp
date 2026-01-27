@@ -1,200 +1,185 @@
 #ifndef VIRTUAL_DESKTOP_HPP
 #define VIRTUAL_DESKTOP_HPP
 
-#include <combaseapi.h> // CoCreateInstance
-#include <shobjidl.h>   // IServiceProvider, IObjectArray
-#include <shobjidl_core.h>  // Contains IVirtualDesktopManager
-#include <wrl/client.h> // Microsoft::WRL::ComPtr
+#include <combaseapi.h>
+#include <shobjidl.h>
+#include <shobjidl_core.h>
+#include <wrl/client.h>
 
 #include "interfaces.hpp"
 #include "services.hpp"
 
-inline Microsoft::WRL::ComPtr<IApplicationView> getView(HWND window)
+inline Microsoft::WRL::ComPtr<IApplicationView> get_view(HWND window)
 {
     Microsoft::WRL::ComPtr<IApplicationView> view;
-    viewCollection->GetViewForHwnd(window, &view);
+    view_collection->GetViewForHwnd(window, &view);
 
     return view;
 }
 
-inline Microsoft::WRL::ComPtr<IObjectArray> getDesktops()
+inline Microsoft::WRL::ComPtr<IObjectArray> get_desktops()
 {
-    Microsoft::WRL::ComPtr<IUnknown> desktopsUnknown;
-    desktopManagerInternal->GetDesktops(&desktopsUnknown);
+    Microsoft::WRL::ComPtr<IUnknown> desktops_unknown;
+    desktop_manager_internal->GetDesktops(&desktops_unknown);
     Microsoft::WRL::ComPtr<IObjectArray> desktops;
-    desktopsUnknown.As(&desktops);
+    desktops_unknown.As(&desktops);
 
     return desktops;
 }
 
-inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop(IObjectArray* desktops, unsigned int index)
+inline Microsoft::WRL::ComPtr<IVirtualDesktop> get_desktop(IObjectArray* desktops, unsigned int index)
 {
-    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
+    Microsoft::WRL::ComPtr<IUnknown> desktop_unknown;
     desktops->GetAt(
         index,
         __uuidof(IUnknown),
-        reinterpret_cast<void**>(desktopUnknown.GetAddressOf())
+        reinterpret_cast<void**>(desktop_unknown.GetAddressOf())
     );
     Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
-    desktopUnknown.As(&desktop);
+    desktop_unknown.As(&desktop);
 
     return desktop;
 }
 
-inline Microsoft::WRL::ComPtr<IVirtualDesktop> getDesktop()
+inline Microsoft::WRL::ComPtr<IVirtualDesktop> get_desktop()
 {
-    Microsoft::WRL::ComPtr<IUnknown> desktopUnknown;
-    desktopManagerInternal->GetCurrentDesktop(&desktopUnknown);
+    Microsoft::WRL::ComPtr<IUnknown> desktop_unknown;
+    desktop_manager_internal->GetCurrentDesktop(&desktop_unknown);
     Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
-    desktopUnknown.As(&desktop);
+    desktop_unknown.As(&desktop);
 
     return desktop;
 }
 
-inline bool createDesktops(IObjectArray* desktops, unsigned int index)
+inline bool create_desktops(IObjectArray* desktops, unsigned int index)
 {
-    // Get desktop count
     unsigned int count = 0;
     desktops->GetCount(&count);
 
-    // Create desktops
     while (count <= index)
     {
         Microsoft::WRL::ComPtr<IVirtualDesktop> desktop;
-        HRESULT hr = desktopManagerInternal->CreateDesktop(&desktop);
+        HRESULT hr = desktop_manager_internal->CreateDesktop(&desktop);
         if (FAILED(hr))
             return false;
 
         count++;
     }
+
     return true;
 }
 
-inline void moveViewToDesktop(IApplicationView* view, IVirtualDesktop* desktop)
+inline void move_view_to_desktop(IApplicationView* view, IVirtualDesktop* desktop)
 {
-    // Move view to desktop
-    desktopManagerInternal->MoveViewToDesktop(
+    desktop_manager_internal->MoveViewToDesktop(
         view,
         desktop
     );
 }
 
-inline bool isViewOnDesktop(IApplicationView* view, IVirtualDesktop* desktop)
+inline bool is_view_on_desktop(IApplicationView* view, IVirtualDesktop* desktop)
 {
-    // Assert bad inputs
     if (!view || !desktop)
         return false;
 
-    // Check if visible
     BOOL status = false;
     return SUCCEEDED(desktop->IsViewVisible(view, &status)) && status;
 }
 
-inline bool isValid(HWND window)
+inline bool is_valid(HWND window)
 {
-    // Assert invalid and hidden
     if (!IsWindow(window) || !IsWindowVisible(window))
         return false;
 
-    // Assert shell
     HWND shell = GetShellWindow();
     if (window == shell)
         return false;
 
-    // Assert tool window
-    LONG windowExStyle = GetWindowLong(window, GWL_EXSTYLE);
-    if (windowExStyle & WS_EX_TOOLWINDOW)
+    LONG window_ex_style = GetWindowLong(window, GWL_EXSTYLE);
+    if (window_ex_style & WS_EX_TOOLWINDOW)
         return false;
 
-    // Assert title window
-    LONG windowStyle = GetWindowLong(window, GWL_STYLE);
-    if (!(windowStyle & WS_CAPTION))
+    LONG window_style = GetWindowLong(window, GWL_STYLE);
+    if (!(window_style & WS_CAPTION))
         return false;
 
     return true;
 }
 
-inline bool canViewMoveDesktop(IApplicationView* view)
+inline bool can_view_move_desktop(IApplicationView* view)
 {
-    // Assert garbage view
     if (!view)
         return false;
 
-    // Check if can move
     int status = 0;
-    desktopManagerInternal->CanViewMoveDesktops(view, &status);
+    desktop_manager_internal->CanViewMoveDesktops(view, &status);
     return (status > 0);
 }
 
-inline void setDesktop(IVirtualDesktop* desktop)
+inline void set_desktop(IVirtualDesktop* desktop)
 {
-    desktopManagerInternal->SwitchDesktop(desktop);
+    desktop_manager_internal->SwitchDesktop(desktop);
 }
 
-inline GUID getDesktopID(IVirtualDesktop* desktop)
+inline GUID get_desktop_id(IVirtualDesktop* desktop)
 {
-    // Return desktop GUID
     GUID id = {};
     desktop->GetID(&id);
     return id;
 }
 
-inline GUID getDesktopID()
+inline GUID get_desktop_id()
 {
-    // Get current desktop
-    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = getDesktop();
+    Microsoft::WRL::ComPtr<IVirtualDesktop> desktop = get_desktop();
 
-    // Return desktop GUID
     GUID id = {};
     desktop->GetID(&id);
     return id;
 }
 
-inline bool isWindowOnDesktop(HWND window, const GUID& targetId)
+inline bool is_window_on_desktop(HWND window, const GUID& targetId)
 {
-    if (!IsWindow(window) || !desktopManager)
+    if (!IsWindow(window) || !desktop_manager)
         return false;
 
-    GUID windowId = {};
-    if (SUCCEEDED(desktopManager->GetWindowDesktopId(window, &windowId)))
-        return memcmp(&windowId, &targetId, sizeof(GUID)) == 0;
+    GUID window_id = {};
+    if (SUCCEEDED(desktop_manager->GetWindowDesktopId(window, &window_id)))
+        return memcmp(&window_id, &targetId, sizeof(GUID)) == 0;
 
-    // If target is current, allow the public API current-desktop check
-    BOOL onCurrent = FALSE;
-    if (SUCCEEDED(desktopManager->IsWindowOnCurrentVirtualDesktop(window, &onCurrent)) && onCurrent)
+    BOOL on_current = FALSE;
+    if (SUCCEEDED(desktop_manager->IsWindowOnCurrentVirtualDesktop(window, &on_current)) && on_current)
     {
-        GUID currentId = getDesktopID();
+        GUID currentId = get_desktop_id();
         return memcmp(&currentId, &targetId, sizeof(GUID)) == 0;
     }
 
     return false;
 }
 
-inline HWND getNextWindow(IVirtualDesktop* desktop)
+inline HWND get_next_window(IVirtualDesktop* desktop)
 {
     HWND result = nullptr;
-    const GUID targetId = getDesktopID(desktop);
+    const GUID target_id = get_desktop_id(desktop);
 
     EnumWindows([](HWND window, LPARAM lParam) -> BOOL {
         auto [desktop, result, targetId] = *reinterpret_cast<std::tuple<IVirtualDesktop*, HWND*, const GUID*>*>(lParam);
 
-        if (!isValid(window))
+        if (!is_valid(window))
             return TRUE;
 
-        // Ensure the raw HWND belongs to the target desktop before proceeding
-        if (!isWindowOnDesktop(window, *targetId))
+        if (!is_window_on_desktop(window, *targetId))
             return TRUE;
 
-        Microsoft::WRL::ComPtr<IApplicationView> view = getView(window);
-        if (view && isViewOnDesktop(view.Get(), desktop))
+        Microsoft::WRL::ComPtr<IApplicationView> view = get_view(window);
+        if (view && is_view_on_desktop(view.Get(), desktop))
         {
             *result = window;
             return FALSE;
         }
         return TRUE;
-    }, reinterpret_cast<LPARAM>(&std::tuple{ desktop, &result, &targetId }));
+    }, reinterpret_cast<LPARAM>(&std::tuple{ desktop, &result, &target_id }));
 
     return result;
 }
 
-#endif // VIRTUAL_DESKTOP_HPP
+#endif

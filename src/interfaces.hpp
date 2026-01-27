@@ -1,17 +1,14 @@
 #ifndef INTERFACES_HPP
 #define INTERFACES_HPP
 
-#include <Unknwn.h>    // IUnknown
-#include <initguid.h>  // DEFINE_GUID
+#include <Unknwn.h>
+#include <initguid.h>
 
-// Fix clashing function definitions
 #undef CreateDesktop
 
-// CLSIDs
 DEFINE_GUID(CLSID_ImmersiveShell,                   0xC2F03A33, 0x21F5, 0x47FA, 0xB4, 0xBB, 0x15, 0x63, 0x62, 0xA2, 0xF2, 0x39);
 DEFINE_GUID(CLSID_VirtualDesktopManagerInternal,    0xC5E0CDCA, 0x7B6E, 0x41B2, 0x9F, 0xC4, 0xD9, 0x39, 0x75, 0xCC, 0x46, 0x7B);
 
-// IVirtualDesktop
 struct __declspec(uuid("3F07F4BE-B107-441A-AF0F-39D82529072C"))
 IVirtualDesktop : public IUnknown
 {
@@ -19,7 +16,6 @@ IVirtualDesktop : public IUnknown
     virtual HRESULT STDMETHODCALLTYPE GetID(GUID* id) = 0;
 };
 
-// IVirtualDesktopManagerInternal
 struct __declspec(uuid("53F5CA0B-158F-4124-900C-057158060B27"))
 IVirtualDesktopManagerInternal : public IUnknown
 {
@@ -38,9 +34,7 @@ IVirtualDesktopManagerInternal : public IUnknown
 
 struct __declspec(uuid("372E1D3B-38D3-42E4-A15B-8AB2B178F513"))
 IApplicationView : public IUnknown
-{
-    // No extra methods
-};
+{};
 
 struct __declspec(uuid("1841C6D7-4F9D-42C0-AF41-8747538F10E5"))
 IApplicationViewCollection : public IUnknown
@@ -51,4 +45,4 @@ IApplicationViewCollection : public IUnknown
     virtual HRESULT STDMETHODCALLTYPE GetViewForHwnd(HWND hwnd, IApplicationView** view) = 0;
 };
 
-#endif // INTERFACES_HPP
+#endif

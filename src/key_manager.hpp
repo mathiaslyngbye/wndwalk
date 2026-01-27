@@ -4,7 +4,6 @@
 #include <windows.h>
 #include <unordered_map>
 #include <functional>
-#include <vector>
 
 #include "key.hpp"
 
@@ -15,13 +14,13 @@ public:
     ~KeyManager();
 
     void spin();
-    bool registerHotKey(const Key& key);
+    bool register_hotkey(const Key& key);
 
 private:
-    bool handleMessage(const MSG& msg);
+    bool handle_message(const MSG& msg);
 
-    unsigned int currentId;
-    std::unordered_map<unsigned int, std::pair<std::function<void(const Arg&)>, Arg>> callbacks;
+    unsigned int current_id_;
+    std::unordered_map<unsigned int, std::pair<std::function<void(const Arg&)>, Arg>> callbacks_;
 };
 
-#endif // KEY_MANAGER_HPP
+#endif

@@ -8,111 +8,92 @@
 #include "focus.hpp"
 #include "virtual_desktop.hpp"
 
-inline void closeWindow(const Arg &arg)
+inline void close_window(const Arg &arg)
 {
     HWND window = GetForegroundWindow();
     if (IsWindow(window))
         PostMessage(window, WM_CLOSE, 0, 0);
 }
 
-inline void maximizeWindow(const Arg& arg)
+inline void maximize_window(const Arg& arg)
 {
     HWND window = GetForegroundWindow();
     if (IsWindow(window))
         ShowWindow(window, SW_MAXIMIZE);
 }
 
-inline void floatWindow(const Arg& arg)
+inline void float_window(const Arg& arg)
 {
     HWND window = GetForegroundWindow();
     if (IsWindow(window))
         ShowWindow(window, SW_RESTORE);
 }
 
-inline void focusDesktop(const Arg &arg)
+inline void focus_desktop(const Arg &arg)
 {
-    // Get index argument
     const int index = std::get<int>(arg);
 
-    // Get desktops and create more if needed
-    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    if (!createDesktops(desktops.Get(), index))
+    Microsoft::WRL::ComPtr<IObjectArray> desktops = get_desktops();
+    if (!create_desktops(desktops.Get(), index))
         return;
-    desktops = getDesktops();
+    desktops = get_desktops();
 
-    // Get source
-    Microsoft::WRL::ComPtr<IVirtualDesktop> fromDesktop = getDesktop(desktops.Get(), index);
-    const GUID fromDesktopID = getDesktopID();
-    const HWND fromWindow = GetForegroundWindow();
-    Microsoft::WRL::ComPtr<IApplicationView> fromView = getView(fromWindow);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> from_desktop = get_desktop(desktops.Get(), index);
+    const GUID from_desktop_id = get_desktop_id();
+    const HWND from_window = GetForegroundWindow();
+    Microsoft::WRL::ComPtr<IApplicationView> fromView = get_view(from_window);
 
-    // Get destination
-    Microsoft::WRL::ComPtr<IVirtualDesktop> toDesktop = getDesktop(desktops.Get(), index);
-    const GUID toDesktopID = getDesktopID(toDesktop.Get());
-    const HWND toWindow = decacheFocus(toDesktopID);
-    Microsoft::WRL::ComPtr<IApplicationView> toView = getView(toWindow);
+    Microsoft::WRL::ComPtr<IVirtualDesktop> to_desktop = get_desktop(desktops.Get(), index);
+    const GUID to_desktop_id = get_desktop_id(to_desktop.Get());
+    const HWND to_window = decache_focus(to_desktop_id);
+    Microsoft::WRL::ComPtr<IApplicationView> to_view = get_view(to_window);
 
-    // Verify source and cache
-    cacheFocus(fromDesktopID, fromWindow);
+    cache_focus(from_desktop_id, from_window);
+    set_desktop(to_desktop.Get());
 
-    // Switch desktop
-    setDesktop(toDesktop.Get());
-
-    // Verify destination and go
-    if(toWindow && toView && isViewOnDesktop(toView.Get(), toDesktop.Get()))
-        setFocus(toWindow);
+    if(to_window && to_view && is_view_on_desktop(to_view.Get(), to_desktop.Get()))
+        set_focus(to_window);
 }
 
-inline void sendDesktop(const Arg &arg)
+inline void send_desktop(const Arg &arg)
 {
-    // Get index argument
     const int index = std::get<int>(arg);
 
-    // Get and assert window
-    const HWND fromWindow = GetForegroundWindow();
+    const HWND from_window = GetForegroundWindow();
     HWND shell = GetShellWindow();
-    if (fromWindow == shell)
+    if (from_window == shell)
         return;
 
-    // Get and assert source view
-    Microsoft::WRL::ComPtr<IApplicationView> fromView = getView(fromWindow);
-    if (!canViewMoveDesktop(fromView.Get()))
+    Microsoft::WRL::ComPtr<IApplicationView> from_view = get_view(from_window);
+    if (!can_view_move_desktop(from_view.Get()))
         return;
 
-    // Get desktops and create more if needed
-    Microsoft::WRL::ComPtr<IObjectArray> desktops = getDesktops();
-    if (!createDesktops(desktops.Get(), index))
+    Microsoft::WRL::ComPtr<IObjectArray> desktops = get_desktops();
+    if (!create_desktops(desktops.Get(), index))
         return;
-    desktops = getDesktops();
+    desktops = get_desktops();
 
-    // Get and assert source desktop
-    Microsoft::WRL::ComPtr<IVirtualDesktop> fromDesktop = getDesktop();
-    if (!isViewOnDesktop(fromView.Get(), fromDesktop.Get()))
+    Microsoft::WRL::ComPtr<IVirtualDesktop> from_desktop = get_desktop();
+    if (!is_view_on_desktop(from_view.Get(), from_desktop.Get()))
         return;
 
-    // Get destination
-    Microsoft::WRL::ComPtr<IVirtualDesktop> toDesktop = getDesktop(desktops.Get(), index);
-    const GUID toDesktopID = getDesktopID(toDesktop.Get());
+    Microsoft::WRL::ComPtr<IVirtualDesktop> to_desktop = get_desktop(desktops.Get(), index);
+    const GUID to_desktop_id = get_desktop_id(to_desktop.Get());
 
-    // Send window to desktop and update cache
-    moveViewToDesktop(fromView.Get(), toDesktop.Get());
-    cacheFocus(toDesktopID, fromWindow);
+    move_view_to_desktop(from_view.Get(), to_desktop.Get());
+    cache_focus(to_desktop_id, from_window);
 
-    // Select next focus
-    HWND toWindow = getNextWindow(fromDesktop.Get());
-    setFocus(toWindow);
+    HWND to_window = get_next_window(from_desktop.Get());
+    set_focus(to_window);
 }
 
 inline void execute(const Arg& arg)
 {
-    // Get command from arg
     const auto command = std::get<const wchar_t**>(arg);
 
-    // Assert valid input
     if (!command || !command[0])
         return;
 
-    // Construct command and argument variables
     const wchar_t* exe = command[0];
     std::wstring parameters;
     for (size_t i = 1; command[i]; i++)
@@ -123,7 +104,6 @@ inline void execute(const Arg& arg)
         parameters += command[i];
     }
 
-    // Run command
     ShellExecuteW(
         nullptr,
         L"open",
@@ -134,5 +114,4 @@ inline void execute(const Arg& arg)
     );
 }
 
-
-#endif // CONTROL_HPP
+#endif

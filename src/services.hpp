@@ -2,40 +2,39 @@
 #define SERVICES_HPP
 
 #include <wrl/client.h>
+
 #include "interfaces.hpp"
 
-inline Microsoft::WRL::ComPtr<IVirtualDesktopManager> desktopManager;
-inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> desktopManagerInternal;
-inline Microsoft::WRL::ComPtr<IApplicationViewCollection> viewCollection;
+inline Microsoft::WRL::ComPtr<IVirtualDesktopManager> desktop_manager;
+inline Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal> desktop_manager_internal;
+inline Microsoft::WRL::ComPtr<IApplicationViewCollection> view_collection;
 
-inline void initializeServices()
+inline void initialize_services()
 {
-    // Public desktop manager
     CoCreateInstance(
         CLSID_VirtualDesktopManager,
         nullptr,
         CLSCTX_ALL,
-        IID_PPV_ARGS(&desktopManager)
+        IID_PPV_ARGS(&desktop_manager)
     );
 
-    // Immersive shell + advertised services
-    Microsoft::WRL::ComPtr<IServiceProvider> serviceProvider;
+    Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
     CoCreateInstance(
         CLSID_ImmersiveShell,
         nullptr,
         CLSCTX_ALL,
-        IID_PPV_ARGS(&serviceProvider)
+        IID_PPV_ARGS(&service_provider)
     );
 
-    serviceProvider->QueryService(
+    service_provider->QueryService(
         __uuidof(IApplicationViewCollection),
-        IID_PPV_ARGS(&viewCollection)
+        IID_PPV_ARGS(&view_collection)
     );
 
-    serviceProvider->QueryService(
+    service_provider->QueryService(
         CLSID_VirtualDesktopManagerInternal,
-        IID_PPV_ARGS(&desktopManagerInternal)
+        IID_PPV_ARGS(&desktop_manager_internal)
     );
 };
 
-#endif // SERVICES_HPP
+#endif
